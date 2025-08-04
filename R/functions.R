@@ -1,20 +1,3 @@
-library(shiny)
-library(shinythemes)
-library(shinyhelper)
-library(shinycssloaders)
-library(tidyverse)
-library(gghighlight)
-library(treemapify)
-library(data.table)
-library(DT)
-
-# Read data tables:----
-cleanfinnprioresults <- fread("data/cleanfinnprioresults.csv")
-pestquestions <- fread("data/pestquestions_est3.csv")
-hv <- fread("data/hv.csv")
-
-
-
 # Format table header for the table under the plot (https://rstudio.github.io/DT/):
 tbl_hdr <- htmltools::withTags(table(
   class = 'display',
@@ -77,10 +60,7 @@ tbl_hdr_map <- htmltools::withTags(table(
   )
 ))
 
-###############################################
-# HELP TEXTS FOR THE POP UP WINDOWS
-
-
+# HELP TEXTS FOR THE POP UP WINDOWS ####
 
 help_plot_grid <- function(){
   tags$i()%>%
