@@ -6,7 +6,15 @@ ui <- function(request){
   
   navbarPage("FinnPRIO-Explorer",
              theme = shinythemes::shinytheme("sandstone"),
-             
+             header = tagList(
+               # Initialize shinyjs
+               # useShinyjs(),
+               tags$head(
+                 tags$link(rel = "shortcut icon", href = "./img/bug-slash-solid-full-gray.svg")#,
+                 # Include our custom CSS
+                 # tags$link(rel = "stylesheet", href = "styles.css")
+               )
+             ),
              tabPanel("1. Plot pests on a graph",
                       
                       fluidPage(
@@ -24,43 +32,29 @@ ui <- function(request){
                                             # Select variable for Y-axis:----
                                             selectizeInput("yaxis", 
                                                            label = "y-axis",
-                                                           choices = c("Entry" = "maahantulo_hallinnan_kanssa_mediaani",
-                                                                       "Establishment and spread" = "asettuminen_ja_leviaminen_mediaani",
-                                                                       "Invasion" = "invaasion_todennakoisyys_hallinnan_kanssa_mediaani",
-                                                                       "Impact" = "vaikutukst_mediaani"),
-                                                           selected = "vaikutukst_mediaani"
+                                                           choices = c("Entry" = "entry_median",
+                                                                       "Establishment and spread" = "establishment_and_spread_median",
+                                                                       "Invasion" = "invasion_median",
+                                                                       "Impact" = "impact_median"),
+                                                           selected = "impact_median"
                                             ),
                                             # Select variable for X-axis:----
                                             selectizeInput("xaxis", 
                                                            label = "x-axis",
-                                                           choices = c("Entry" = "maahantulo_hallinnan_kanssa_mediaani",
-                                                                       "Establishment and spread" = "asettuminen_ja_leviaminen_mediaani",
-                                                                       "Invasion" = "invaasion_todennakoisyys_hallinnan_kanssa_mediaani",
-                                                                       "Impact" = "vaikutukst_mediaani"),
-                                                           selected = "invaasion_todennakoisyys_hallinnan_kanssa_mediaani"
+                                                           choices = c("Entry" = "entry_median",
+                                                                       "Establishment and spread" = "establishment_and_spread_median",
+                                                                       "Invasion" = "invasion_median",
+                                                                       "Impact" = "impact_median"),
+                                                           selected = "invasion_median"
                                             ),
                                             tags$hr(style="border-color: gray;"),
                                             tags$h4(strong("Quarantine status"), style="color:#7C6A56"),
                                             
                                             # Select pests' status according to the new EU Regulation:----
-                                            checkboxGroupInput(inputId = "tuhoojastatus_eu_2016_2031_mukaan",
+                                            checkboxGroupInput(inputId = "quarantine_status",
                                                                label = NULL,
-                                                               choices = c(
-                                                                 "Priority",
-                                                                 "Protected zone",
-                                                                 "Emergency measures",
-                                                                 "Other quarantine",
-                                                                 "RNQP",
-                                                                 "Other non-quarantine"
-                                                               ),
-                                                               selected = c(
-                                                                 "Priority",
-                                                                 "Protected zone",
-                                                                 "Emergency measures",
-                                                                 "Other quarantine",
-                                                                 "RNQP",
-                                                                 "Other non-quarantine"
-                                                               ),
+                                                               choices = quaran$name,
+                                                               selected = quaran$name,
                                                                inline = FALSE
                                             ),
                                             
@@ -68,26 +62,10 @@ ui <- function(request){
                                             tags$h4(strong("Taxonomic group"), style="color:#7C6A56"),
                                             
                                             #Select pest taxonomic group:----
-                                            checkboxGroupInput(inputId = "tuhoojaryhma",
+                                            checkboxGroupInput(inputId = "taxonomic_group",
                                                                label = NULL,
-                                                               choices = c(
-                                                                 "Viruses and viroids",
-                                                                 "Bacteria and phytoplasmas", 
-                                                                 "Fungi and fungus-like",
-                                                                 "Insects",
-                                                                 "Mites",
-                                                                 "Nematodes",
-                                                                 "Snails"
-                                                               ),
-                                                               selected = c(
-                                                                 "Viruses and viroids",
-                                                                 "Bacteria and phytoplasmas", 
-                                                                 "Fungi and fungus-like",
-                                                                 "Insects",
-                                                                 "Mites",
-                                                                 "Nematodes",
-                                                                 "Snails"
-                                                               ),
+                                                               choices = taxa$name,
+                                                               selected = taxa$name,
                                                                inline = FALSE
                                             ),
                                             
@@ -97,45 +75,45 @@ ui <- function(request){
                                    tags$h4(strong("Presence in Europe"), style="color:#7C6A56"),
                                    
                                    # Select pest presence in Europe: ----
-                                   checkboxGroupInput(inputId = "esiintyyko_tuhooja_euroopassa",
+                                   checkboxGroupInput(inputId = "presence_in_europe",
                                                       label = NULL, 
-                                                      choices = c("Present" = "Yes",
-                                                                  "Absent" = "No"),
-                                                      selected = c("Yes",
-                                                                   "No"),
+                                                      choices = c("Present" = TRUE,
+                                                                  "Absent" = FALSE),
+                                                      selected = c(TRUE, FALSE),
                                                       inline = FALSE
                                    ),
                                    
                                    tags$hr(style="border-color: gray;"),
-                                   tags$h4(strong("Threatened sector"), style="color:#7C6A56"),
-                                   
                                    # Select threatened sectors: ----
-                                   checkboxGroupInput(inputId = "threatened_sek",
-                                                      label = "Trees and shrubs",
-                                                      choices = c("Conifers" = "havukasvit_uh",
-                                                                  "Broadleaves" = "lehtipuut_ja_pensaat_uh",
-                                                                  "Fruits" = "hedelmapuut_uh",
-                                                                  "Berries" = "marjakasvit_uh"),
-                                                      selected = "havukasvit_uh"),
+                                   uiOutput("threat_checkboxes"),
+                                   # tags$h4(strong("Threatened sector"), style="color:#7C6A56"),
                                    
-                                   checkboxGroupInput(inputId = "threatened_sek2",
-                                                      label = "Open-field crops",
-                                                      choices = c("Potato" = "peruna_uh",                                                                                   
-                                                                  "Sugar beet" = "sokerijuurikas_uh",
-                                                                  "Vegetables" = "avomaavihannekset_uh",                                                                        
-                                                                  "Other" = "muut_avomaakasvit_uh")),
-                                   
-                                   
-                                   checkboxGroupInput(inputId = "threatened_sek3",
-                                                      label = "Greenhouse crops",
-                                                      choices = c("Cucumber" = "kasvihuonekurkku_uh",                                                                         
-                                                                  "Tomato" = "kasvihuonetomaatti_uh",                                                                       
-                                                                  "Pepper" = "kasvihuonepaprika_uh",                                                                        
-                                                                  "Lettuce" = "kasvihuonesalaatti_uh",                                                                       
-                                                                  "Ornamentals" = "kasvihuonekoristekasvit_uh")),
-                                   checkboxGroupInput(inputId = "threatened_sek4",
-                                                      label = "Others",
-                                                      choices = c("Others" = "muut_uh")),
+                                   # checkboxGroupInput(inputId = "threatened_sek",
+                                   #                    label = "Trees and shrubs",
+                                   #                    choices = c("Conifers" = "havukasvit_uh",
+                                   #                                "Broadleaves" = "lehtipuut_ja_pensaat_uh",
+                                   #                                "Fruits" = "hedelmapuut_uh",
+                                   #                                "Berries" = "marjakasvit_uh"),
+                                   #                    selected = "havukasvit_uh"),
+                                   # 
+                                   # checkboxGroupInput(inputId = "threatened_sek2",
+                                   #                    label = "Open-field crops",
+                                   #                    choices = c("Potato" = "peruna_uh",                                                                                   
+                                   #                                "Sugar beet" = "sokerijuurikas_uh",
+                                   #                                "Vegetables" = "avomaavihannekset_uh",                                                                        
+                                   #                                "Other" = "muut_avomaakasvit_uh")),
+                                   # 
+                                   # 
+                                   # checkboxGroupInput(inputId = "threatened_sek3",
+                                   #                    label = "Greenhouse crops",
+                                   #                    choices = c("Cucumber" = "kasvihuonekurkku_uh",                                                                         
+                                   #                                "Tomato" = "kasvihuonetomaatti_uh",                                                                       
+                                   #                                "Pepper" = "kasvihuonepaprika_uh",                                                                        
+                                   #                                "Lettuce" = "kasvihuonesalaatti_uh",                                                                       
+                                   #                                "Ornamentals" = "kasvihuonekoristekasvit_uh")),
+                                   # checkboxGroupInput(inputId = "threatened_sek4",
+                                   #                    label = "Others",
+                                   #                    choices = c("Others" = "muut_uh")),
                                    
                             )),
                             
@@ -194,7 +172,7 @@ ui <- function(request){
                                      wellPanel( 
                                        tags$h4(strong("Show")),
                                        # Pests' names on the plot:
-                                       checkboxInput(inputId = "tuhoojanimi",
+                                       checkboxInput(inputId = "pest_name",
                                                      label = "Pest names",
                                                      value = FALSE,
                                                      width = "auto"),
@@ -202,10 +180,10 @@ ui <- function(request){
                                        # Error bars on the plot:
                                        help_add(),
                                        tags$h5(strong("Uncertainty")),
-                                       checkboxInput(inputId = "err_25_ja_75_prosenttipiste",
+                                       checkboxInput(inputId = "whiskers_for_y",
                                                      label = "Whiskers for y",
                                                      value = TRUE),
-                                       checkboxInput(inputId = "err_25_ja_75_prosenttipiste1",
+                                       checkboxInput(inputId = "whiskers_for_x",
                                                      label = "Whiskers for x",
                                                      value = TRUE),
                                        
@@ -314,12 +292,12 @@ ui <- function(request){
                                            selectInput(inputId = "pest1_sel",
                                                        label = "Pest 1",
                                                        #choices=c()
-                                                       choices = cleanfinnprioresults$tuhooja
+                                                       choices = unique(cleanfinnprioresults$pest)
                                            ),
                                            tags$br(),
                                            selectInput(inputId = "pest2_sel",
                                                        label = "Pest 2",
-                                                       choices = cleanfinnprioresults$tuhooja,
+                                                       choices = unique(cleanfinnprioresults$pest),
                                                        selected = "Aculops fuchsiae"
                                            )
                                            

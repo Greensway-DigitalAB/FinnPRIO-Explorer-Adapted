@@ -63,7 +63,7 @@ tbl_hdr_map <- htmltools::withTags(table(
 # HELP TEXTS FOR THE POP UP WINDOWS ####
 
 help_plot_grid <- function(){
-  tags$i()%>%
+  tags$i() |> 
     helper(type="inline",
            size = "m",
            title = "Number of plots",
@@ -80,7 +80,7 @@ help_plot_grid <- function(){
 }
 
 help_add <- function(){
-  tags$i()%>%
+  tags$i() |> 
     helper(type="inline",
            size = "m",
            title = "Uncertainty",
@@ -94,7 +94,7 @@ help_add <- function(){
 
 
 help_threshold <- function(){
-  tags$i()%>%
+  tags$i() |> 
     helper(type="inline",
            size = "m",
            title = "Threshold line",
@@ -109,7 +109,7 @@ help_threshold <- function(){
 
 
 help_pw <- function(){
-  tags$i()%>%
+  tags$i() |> 
     helper(type="inline",
            size = "m",
            title = "ENT2A & ENT2B",
@@ -133,7 +133,7 @@ help_pw <- function(){
 
 
 help_pw_a_h <- function(){
-  tags$i()%>%
+  tags$i() |> 
     helper(type="inline",
            size = "m",
            title = "Pathways",

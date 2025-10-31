@@ -8,70 +8,99 @@ function(input, output, session) {
   
   ## Subset data -> filter data based on the input selections:-----
   selected_status <- reactive({
-    
+    req(cleanfinnprioresults)
+    req(input$'group_Greenhouse crops')
     #req(input$impact_score)
-    x1 <- input$threatened_sek
-    x2 <- input$threatened_sek2
-    x3 <- input$threatened_sek3 
-    x4 <- input$threatened_sek4
+    x1 <- input$'group_Greenhouse crops'
+    x2 <- input$'group_Open-field crops'
+    x3 <- input$'group_Trees and shrubs'
+    x4 <- input$'group_Others'
     thr_sec <- c(x1, x2, x3, x4)
-    
-    if (is.null(input$tuhoojastatus_eu_2016_2031_mukaan) | is.null(input$tuhoojaryhma) | 
-        is.null(input$esiintyyko_tuhooja_euroopassa) | is.null(thr_sec) == TRUE) {
+# print( thr_sec )
+    if (is.null(input$quarantine_status) | is.null(input$taxonomic_group) | 
+        is.null(input$presence_in_europe) | is.null(thr_sec) == TRUE) {
       validate(
-        need(input$tuhoojastatus_eu_2016_2031_mukaan, "Select a quarantine status"),
-        need(input$tuhoojaryhma, "Select a taxonomic group(s)"),
-        need(input$esiintyyko_tuhooja_euroopassa, "Select presence in Europe"),
+        need(input$quarantine_status, "Select a quarantine status"),
+        need(input$taxonomic_group, "Select a taxonomic group(s)"),
+        need(input$presence_in_europe, "Select presence in Europe"),
         need(thr_sec, "Select a threatened sector(s)")
       )
       
     }else  {
       
-      cleanfinnprioresults %>%
+      cleanfinnprioresults |> 
         filter(
-          tuhoojastatus_eu_2016_2031_mukaan  %in% input$tuhoojastatus_eu_2016_2031_mukaan,
-          tuhoojaryhma %in% input$tuhoojaryhma,
-          esiintyyko_tuhooja_euroopassa %in% input$esiintyyko_tuhooja_euroopassa,
-          maahantulo_hallinnan_kanssa_mediaani > input$entry_score[1] & maahantulo_hallinnan_kanssa_mediaani < input$entry_score[2],
-          asettuminen_ja_leviaminen_mediaani > input$establishment_score[1] & asettuminen_ja_leviaminen_mediaani < input$establishment_score[2],
-          invaasion_todennakoisyys_hallinnan_kanssa_mediaani > input$invasion_score[1] & invaasion_todennakoisyys_hallinnan_kanssa_mediaani < input$invasion_score[2],
-          vaikutukst_mediaani > input$impact_score[1] & vaikutukst_mediaani < input$impact_score[2]
+          quarantine_status  %in% input$quarantine_status,
+          taxonomic_group %in% input$taxonomic_group,
+          presence_in_europe %in% input$presence_in_europe,
+          entry_median > input$entry_score[1] & entry_median < input$entry_score[2],
+          establishment_and_spread_median > input$establishment_score[1] & establishment_and_spread_median < input$establishment_score[2],
+          invasion_median > input$invasion_score[1] & invasion_median < input$invasion_score[2],
+          impact_median > input$impact_score[1] & impact_median < input$impact_score[2]
         )
     }
   })
   
+  output$threat_checkboxes <- renderUI({
+    # Assuming there's a column called 'group' to group threats
+    threat_groups <- split(threats, threats$threatGroup)
+    
+    # Generate UI for each group
+    group_ui <- lapply(names(threat_groups), function(group_name) {
+      group_threats <- threat_groups[[group_name]]
+      
+      checkboxGroupInput(
+        inputId = paste0("group_", group_name),
+        label = group_name,
+        choices = setNames(group_threats$idThrSect, group_threats$name),
+        selected = group_threats$idThrSect,
+        inline = FALSE
+      )
+    })
+    
+    half <- ceiling(length(group_ui) / 2)
+    
+    ui <- tagList(
+      h4(strong("Threatened Sectors"), style = "color:#7C6A56"),
+      group_ui
+      # fluidRow(
+      #   column(6, group_ui[1:half]),
+      #   column(6, group_ui[(half + 1):length(group_ui)])
+      # )
+    )
+    return (ui)
+  })
   
   ## Selection of threatened sector: ---- 
   ## https://dplyr.tidyverse.org/reference/filter_all.html
-  selected_status1 <- reactive({ 
-    
-    filter_at(
-      selected_status(), vars(input$threatened_sek, input$threatened_sek2,input$threatened_sek3, input$threatened_sek4), 
-      any_vars(. == "Yes")) ### https://stackoverflow.com/questions/53197150/filter-multiple-columns-by-value-using-checkbox-group
-    
-  })
+  # selected_status1 <- reactive({ 
+  #   # selected_status()
+  #   # filter_at(
+  #   #   selected_status(), vars(input$threatened_sek, input$threatened_sek2,input$threatened_sek3, input$threatened_sek4), 
+  #   #   any_vars(. == "Yes")) ### https://stackoverflow.com/questions/53197150/filter-multiple-columns-by-value-using-checkbox-group
+  #   
+  # })
   
   
   ## Subset data -> filter data for the table generated under the plot:----
   infotable <- reactive({
     req(input$plot_brush)
-    
-    select(selected_status1(), 
-           tuhooja, 
-           tuhoojaryhma, 
-           esiintyyko_tuhooja_euroopassa,
-           maahantulo_hallinnan_kanssa_25_prosenttipiste,
-           maahantulo_hallinnan_kanssa_mediaani,
-           maahantulo_hallinnan_kanssa_75_prosenttipiste,
-           asettuminen_ja_leviaminen_25_prosenttipiste,
-           asettuminen_ja_leviaminen_mediaani,
-           asettuminen_ja_leviaminen_75_prosenttipiste,
-           invaasion_todennakoisyys_hallinnan_kanssa_25_prosenttipiste,
-           invaasion_todennakoisyys_hallinnan_kanssa_mediaani, 
-           invaasion_todennakoisyys_hallinnan_kanssa_75_prosenttipiste,
-           vaikutukst_25_prosenttipiste,
-           vaikutukst_mediaani,
-           vaikutukst_75_prosenttipiste
+    select(selected_status(), #selected_status1(), 
+           pest, 
+           taxonomic_group, 
+           presence_in_europe,
+           entry_25perc,
+           entry_median,
+           entry_75perc,
+           establishment_and_spread_25perc,
+           establishment_and_spread_median,
+           establishment_and_spread_75perc,
+           invasion_25perc,
+           invasion_median, 
+           invasion_75perc,
+           impact_25perc,
+           impact_median,
+           impact_75perc
            
     )
   })
@@ -86,7 +115,7 @@ function(input, output, session) {
   ## Data used for generating the table from brush in "1. Select pests to plot"-tab: ----
   selected_pests <- reactive({
     
-    infotable() %>%
+    infotable()  |> 
       brushedPoints(input$plot_brush, input$xaxis, input$yaxis)
     
   })
@@ -99,22 +128,22 @@ function(input, output, session) {
     
     # Returns rows from a data frame which are selected with the brush used in plotOutput:
     DT::datatable(selected_pests(),
-                  colnames = c("Sort" = "tuhooja", 
-                               "Pest" = "tuhooja", 
-                               "Taxonomic group" = "tuhoojaryhma", 
-                               "Presence in Europe" = "esiintyyko_tuhooja_euroopassa",
-                               "Entry, min" = "maahantulo_hallinnan_kanssa_25_prosenttipiste",
-                               "Entry, median" = "maahantulo_hallinnan_kanssa_mediaani",
-                               "Entry, max" = "maahantulo_hallinnan_kanssa_75_prosenttipiste",
-                               "Establishment and spread, min" = "asettuminen_ja_leviaminen_25_prosenttipiste",
-                               "Establishment and spread, median" = "asettuminen_ja_leviaminen_mediaani",
-                               "Establishment and spread, max" = "asettuminen_ja_leviaminen_75_prosenttipiste",
-                               "Invasion, min" = "invaasion_todennakoisyys_hallinnan_kanssa_25_prosenttipiste",
-                               "Invasion, median" = "invaasion_todennakoisyys_hallinnan_kanssa_mediaani", 
-                               "Invasion, max" = "invaasion_todennakoisyys_hallinnan_kanssa_75_prosenttipiste",
-                               "Impact, min" = "vaikutukst_25_prosenttipiste",
-                               "Impact, median" = "vaikutukst_mediaani",
-                               "Impact, max" = "vaikutukst_75_prosenttipiste"
+                  colnames = c("Sort" = "pest", 
+                               "Pest" = "pest", 
+                               "Taxonomic group" = "taxonomic_group", 
+                               "Presence in Europe" = "presence_in_europe",
+                               "Entry, min" = "entry_25perc",
+                               "Entry, median" = "entry_median",
+                               "Entry, max" = "entry_75perc",
+                               "Establishment and spread, min" = "establishment_and_spread_25perc",
+                               "Establishment and spread, median" = "establishment_and_spread_median",
+                               "Establishment and spread, max" = "establishment_and_spread_75perc",
+                               "Invasion, min" = "invasion_25perc",
+                               "Invasion, median" = "invasion_median", 
+                               "Invasion, max" = "invasion_75perc",
+                               "Impact, min" = "impact_25perc",
+                               "Impact, median" = "impact_median",
+                               "Impact, max" = "impact_75perc"
                   ),
                   class = 'cell-border stripe',
                   container = tbl_hdr, # -> Transforms the table header into 2 rows. To make changes go to 'tbl_hdr' in functions.R
@@ -123,16 +152,16 @@ function(input, output, session) {
                   options = list(
                     ## Hide the first column that contains rownames and display columns based on the selections for x and y:
                     columnDefs = list(list(targets = c(0), visible = FALSE), 
-                                      if(input$xaxis == "invaasion_todennakoisyys_hallinnan_kanssa_mediaani" | input$yaxis == "invaasion_todennakoisyys_hallinnan_kanssa_mediaani") {
+                                      if(input$xaxis == "invasion_median" | input$yaxis == "invasion_median") {
                                         list(targets = c(10,11,12), visible = TRUE)
                                       } else list(targets = c(10,11,12), visible = FALSE),
-                                      if(input$xaxis == "maahantulo_hallinnan_kanssa_mediaani" | input$yaxis == "maahantulo_hallinnan_kanssa_mediaani") {
+                                      if(input$xaxis == "entry_median" | input$yaxis == "entry_median") {
                                         list(targets = c(4,5,6), visible = TRUE)
                                       } else list(targets = c(4,5,6), visible = FALSE),
-                                      if(input$xaxis == "asettuminen_ja_leviaminen_mediaani" | input$yaxis == "asettuminen_ja_leviaminen_mediaani") {
+                                      if(input$xaxis == "establishment_and_spread_median" | input$yaxis == "establishment_and_spread_median") {
                                         list(targets = c(7,8,9), visible = TRUE)
                                       } else list(targets = c(7,8,9), visible = FALSE),
-                                      if(input$xaxis == "vaikutukst_mediaani" | input$yaxis == "vaikutukst_mediaani") {
+                                      if(input$xaxis == "impact_mediaani" | input$yaxis == "impact_mediaani") {
                                         list(targets = c(13,14,15), visible = TRUE)
                                       } else list(targets = c(13,14,15), visible = FALSE)
                     ),
@@ -145,30 +174,30 @@ function(input, output, session) {
                                         exportOptions = list(columns = ":visible"))
                     ),
                     ## All results appear on same page:
-                    paging=FALSE)) %>%
+                    paging=FALSE)) |> 
       
-      formatStyle("Pest",  color = "black", fontWeight = "bold", fontStyle = "normal") %>%
+      formatStyle("Pest",  color = "black", fontWeight = "bold", fontStyle = "normal") |> 
       formatRound(c("Entry, min", "Entry, median", "Entry, max", "Establishment and spread, min", 
                     "Establishment and spread, median", "Establishment and spread, max", 
                     "Invasion, min", "Invasion, median", "Invasion, max",
-                    "Impact, min", "Impact, median", "Impact, max"), 2) %>%
+                    "Impact, min", "Impact, median", "Impact, max"), 2) |> 
       formatStyle("Entry, median",
-                  background = styleColorBar(cleanfinnprioresults$maahantulo_hallinnan_kanssa_mediaani, "#DAE375"),
+                  background = styleColorBar(cleanfinnprioresults$entry_median, "#DAE375"),
                   backgroundSize = "98% 88%",
                   backgroundRepeat = "no-repeat",
-                  backgroundPosition = "center") %>%
+                  backgroundPosition = "center") |> 
       formatStyle("Establishment and spread, median",
-                  background = styleColorBar(cleanfinnprioresults$asettuminen_ja_leviaminen_mediaani, "#6D9F80"),
+                  background = styleColorBar(cleanfinnprioresults$establishment_and_spread_median, "#6D9F80"),
                   backgroundSize = "98% 88%",
                   backgroundRepeat = "no-repeat",
-                  backgroundPosition = "center") %>%
+                  backgroundPosition = "center") |> 
       formatStyle("Invasion, median",
-                  background = styleColorBar(cleanfinnprioresults$invaasion_todennakoisyys_hallinnan_kanssa_mediaani, "#CEB888"),
+                  background = styleColorBar(cleanfinnprioresults$invasion_median, "#CEB888"),
                   backgroundSize = "98% 88%",
                   backgroundRepeat = "no-repeat",
-                  backgroundPosition = "center") %>%
+                  backgroundPosition = "center") |> 
       formatStyle("Impact, median",
-                  background = styleColorBar(cleanfinnprioresults$vaikutukst_mediaani, "#DE4C9A"),
+                  background = styleColorBar(cleanfinnprioresults$impact_mediaani, "#DE4C9A"),
                   backgroundSize = "98% 88%",
                   backgroundRepeat = "no-repeat",
                   backgroundPosition = "center") 
@@ -189,12 +218,12 @@ function(input, output, session) {
   ## Generate a plot in "1. Select pests to plot"-tab:----
   
   plot_output <- reactive({   
+    req(selected_status())
     
-    
-    p <- ggplot(selected_status1(),
+    p <- ggplot(selected_status(), #selected_status1(),
                 aes_string(x = input$xaxis, 
                            y = input$yaxis, 
-                           color = "tuhoojastatus_eu_2016_2031_mukaan"
+                           color = "quarantine_status"
                 )) + 
       
       geom_point(size = 3) +  
@@ -202,7 +231,7 @@ function(input, output, session) {
       xlim(min = 0, max = 1) + ylim(min = 0, max = 1)  + 
       labs(
         caption = paste("    The dots indicate the simulated median score, and the whiskers show the 25th and the 75th percentiles of the distribution of the scores.
-                         \n    Number of pests: ", nrow(selected_status1())),
+                         \n    Number of pests: ", nrow(selected_status())), #selected_status1()
         color = "" # "Quarantine status:"
       ) +
       
@@ -237,23 +266,23 @@ function(input, output, session) {
     ##################### 
     
     # Add label to X:
-    if(input$xaxis == "invaasion_todennakoisyys_hallinnan_kanssa_mediaani") {
+    if(input$xaxis == "invasion_median") {
       p <- p+labs(x = "Invasion score") 
-    } else if(input$xaxis == "maahantulo_hallinnan_kanssa_mediaani") {
+    } else if(input$xaxis == "entry_median") {
       p <- p+labs(x = "Entry score")
-    } else if(input$xaxis == "asettuminen_ja_leviaminen_mediaani") {
+    } else if(input$xaxis == "establishment_and_spread_median") {
       p <- p+labs(x = "Establishment and spread score")
-    } else if(input$xaxis == "vaikutukst_mediaani") {
+    } else if(input$xaxis == "impact_mediaani") {
       p <- p+labs(x = "Impact score")
     }
     # Add label to Y:
-    if(input$yaxis == "invaasion_todennakoisyys_hallinnan_kanssa_mediaani") {
+    if(input$yaxis == "invasion_median") {
       p <- p+labs( y = "Invasion score") 
-    } else if(input$yaxis == "maahantulo_hallinnan_kanssa_mediaani") {
+    } else if(input$yaxis == "entry_median") {
       p <- p+labs( y = "Entry score")
-    } else if(input$yaxis == "asettuminen_ja_leviaminen_mediaani") {
+    } else if(input$yaxis == "establishment_and_spread_median") {
       p <- p+labs( y = "Establishment and spread score")
-    } else if(input$yaxis == "vaikutukst_mediaani") {
+    } else if(input$yaxis == "impact_median") {
       p <- p+labs( y = "Impact score")
     }
     
@@ -262,7 +291,7 @@ function(input, output, session) {
     p <- p +
       {switch(input$split_plott,
               "2" = (
-                facet_wrap(~ tuhoojastatus_eu_2016_2031_mukaan))
+                facet_wrap(~ quarantine_status))
       )
       }
     
@@ -288,8 +317,8 @@ function(input, output, session) {
     
     # Display pests' names when select checkbox: ----
     p <- p +
-      {if(input$tuhoojanimi)    
-        geom_text(aes(label = tuhooja), 
+      {if(input$pest_name)    
+        geom_text(aes(label = pest), 
                   size = 4, 
                   vjust = -0.05, 
                   hjust = -0.08)} 
@@ -297,47 +326,47 @@ function(input, output, session) {
     
     # Display error bars from 25th and 75th percentile when select checkbox for X: ----
     p <- p +  
-      {if(input$err_25_ja_75_prosenttipiste1 && input$xaxis == "invaasion_todennakoisyys_hallinnan_kanssa_mediaani") 
-        geom_errorbar(aes(xmax = invaasion_todennakoisyys_hallinnan_kanssa_75_prosenttipiste, 
-                          xmin = invaasion_todennakoisyys_hallinnan_kanssa_25_prosenttipiste),  
+      {if(input$whiskers_for_x && input$xaxis == "invasion_median") 
+        geom_errorbar(aes(xmax = invasion_75perc, 
+                          xmin = invasion_25perc),  
                       width = 0.01)
         
-        else if(input$err_25_ja_75_prosenttipiste1 && input$xaxis == "asettuminen_ja_leviaminen_mediaani") 
-          geom_errorbar(aes(xmax = asettuminen_ja_leviaminen_75_prosenttipiste, 
-                            xmin = asettuminen_ja_leviaminen_25_prosenttipiste),  
+        else if(input$whiskers_for_x && input$xaxis == "establishment_and_spread_median") 
+          geom_errorbar(aes(xmax = establishment_and_spread_75perc, 
+                            xmin = establishment_and_spread_25perc),  
                         width = 0.01)
         
-        else if(input$err_25_ja_75_prosenttipiste1 && input$xaxis == "maahantulo_hallinnan_kanssa_mediaani") 
-          geom_errorbar(aes(xmax = maahantulo_hallinnan_kanssa_75_prosenttipiste, 
-                            xmin = maahantulo_hallinnan_kanssa_25_prosenttipiste),  
+        else if(input$whiskers_for_x && input$xaxis == "entry_median") 
+          geom_errorbar(aes(xmax = entry_75perc, 
+                            xmin = entry_25perc),  
                         width = 0.01)
         
-        else if(input$err_25_ja_75_prosenttipiste1 && input$xaxis == "vaikutukst_mediaani") 
-          geom_errorbar(aes(xmax = vaikutukst_75_prosenttipiste, 
-                            xmin = vaikutukst_25_prosenttipiste),  
+        else if(input$whiskers_for_x && input$xaxis == "impact_median") 
+          geom_errorbar(aes(xmax = impact_75perc, 
+                            xmin = impact_25perc),  
                         width = 0.01)} 
     
     
     # Display error bars from 25th and 75th percentile when select checkbox for Y: ----
     p <- p + 
-      {if(input$err_25_ja_75_prosenttipiste && input$yaxis == "vaikutukst_mediaani") 
-        geom_errorbar(aes(ymax = vaikutukst_75_prosenttipiste, 
-                          ymin = vaikutukst_25_prosenttipiste),  
+      {if(input$whiskers_for_y && input$yaxis == "impact_median") 
+        geom_errorbar(aes(ymax = impact_75perc, 
+                          ymin = impact_25perc),  
                       width = 0.01)
         
-        else if(input$err_25_ja_75_prosenttipiste && input$yaxis == "invaasion_todennakoisyys_hallinnan_kanssa_mediaani") 
-          geom_errorbar(aes(ymax = invaasion_todennakoisyys_hallinnan_kanssa_75_prosenttipiste, 
-                            ymin = invaasion_todennakoisyys_hallinnan_kanssa_25_prosenttipiste),  
+        else if(input$whiskers_for_y && input$yaxis == "invasion_median") 
+          geom_errorbar(aes(ymax = invasion_75perc, 
+                            ymin = invasion_25perc),  
                         width = 0.01)
         
-        else if(input$err_25_ja_75_prosenttipiste && input$yaxis == "asettuminen_ja_leviaminen_mediaani") 
-          geom_errorbar(aes(ymax = asettuminen_ja_leviaminen_75_prosenttipiste, 
-                            ymin = asettuminen_ja_leviaminen_25_prosenttipiste),  
+        else if(input$whiskers_for_y && input$yaxis == "establishment_and_spread_median") 
+          geom_errorbar(aes(ymax = establishment_and_spread_75perc, 
+                            ymin = establishment_and_spread_25perc),  
                         width = 0.01)
         
-        else if(input$err_25_ja_75_prosenttipiste && input$yaxis == "maahantulo_hallinnan_kanssa_mediaani") 
-          geom_errorbar(aes(ymax = maahantulo_hallinnan_kanssa_75_prosenttipiste, 
-                            ymin = maahantulo_hallinnan_kanssa_25_prosenttipiste),  
+        else if(input$whiskers_for_y && input$yaxis == "entry_median") 
+          geom_errorbar(aes(ymax = entry_75perc, 
+                            ymin = entry_25perc),  
                         width = 0.01)}  
     
     p
@@ -347,6 +376,7 @@ function(input, output, session) {
   
   
   output$pest_plot <- renderPlot({
+    req(selected_status())
     plot_output()
   })
   
@@ -363,62 +393,56 @@ function(input, output, session) {
     }
   )
   
-  
-  
-  
+
   ###############################################################
   ###############################################################
   
   ## Generate table with all assessed pests in "2. Show pests in data table"-tab:-----
   output$table_all <- DT::renderDataTable({
-    
-    
     #The format of the following columns is converted from character to factor, so the selectize inputs (list in filter options) to be available:
-    cleanfinnprioresults$tuhoojastatus_eu_2016_2031_mukaan <- as.factor(cleanfinnprioresults$tuhoojastatus_eu_2016_2031_mukaan)
-    cleanfinnprioresults$tuhoojaryhma <- as.factor(cleanfinnprioresults$tuhoojaryhma)
-    cleanfinnprioresults$esiintyyko_tuhooja_euroopassa <- as.factor(cleanfinnprioresults$esiintyyko_tuhooja_euroopassa)
+    cleanfinnprioresults$quarantine_status <- as.factor(cleanfinnprioresults$quarantine_status)
+    cleanfinnprioresults$taxonomic_group <- as.factor(cleanfinnprioresults$taxonomic_group)
+    cleanfinnprioresults$presence_in_europe <- as.factor(cleanfinnprioresults$presence_in_europe)
     
     #Creating links to EPPO Global Database:
     eppocode = cleanfinnprioresults$eppo_code
     base_link = "https://gd.eppo.int/taxon/"
     eppoGD = paste0('<a href="', base_link, eppocode,'" target="_blank">', eppocode, '</a>')
-    
     #Add new column to the datatable:
-    cleanfinnprioresults[,  ':='(eppo = eppoGD)]
-    
-    
-    
+    # cleanfinnprioresults[,  ':='(eppo = eppoGD)]
+    cleanfinnprioresults$eppo <- eppoGD
+
     DT::datatable(select(cleanfinnprioresults, 
-                         tuhooja, 
+                         pest, 
                          #eppo_code,
                          eppo,
-                         tuhoojaryhma,
-                         tuhoojastatus_eu_2016_2031_mukaan,
-                         esiintyyko_tuhooja_euroopassa, 
-                         maahantulo_hallinnan_kanssa_mediaani,
-                         asettuminen_ja_leviaminen_mediaani,
-                         invaasion_todennakoisyys_hallinnan_kanssa_mediaani, 
-                         vaikutukst_mediaani,
-                         maahantulon_hallittavuus_mediaani,
-                         leviamisen_hallittavuus_mediaani,
-                         hallittavuus_mediaani,
+                         taxonomic_group,
+                         quarantine_status,
+                         presence_in_europe, 
+                         entry_median,
+                         establishment_and_spread_median,
+                         invasion_median, 
+                         impact_median,
+                         preventability_median,
+                         controlability_median,
+                         manageability_median,
                          assessment_date
     ),
     
-    colnames = c("Sort" = "tuhooja", 
-                 "Pest" = "tuhooja", 
+    colnames = c("Sort" = "pest", 
+                 "Pest" = "pest", 
                  #"EPPO code" = "eppo_code",
                  "EPPO Code" = "eppo",
-                 "Taxonomic group" = "tuhoojaryhma", 
-                 "Quarantine status" = "tuhoojastatus_eu_2016_2031_mukaan",
-                 "Presence in Europe" = "esiintyyko_tuhooja_euroopassa", 
-                 "Entry" = "maahantulo_hallinnan_kanssa_mediaani", 
-                 "Establishment and spread" = "asettuminen_ja_leviaminen_mediaani",
-                 "Invasion" = "invaasion_todennakoisyys_hallinnan_kanssa_mediaani", 
-                 "Impact" = "vaikutukst_mediaani",
-                 "Preventability" = "maahantulon_hallittavuus_mediaani",
-                 "Controllability"= "leviamisen_hallittavuus_mediaani",
-                 "Manageability"= "hallittavuus_mediaani",
+                 "Taxonomic group" = "taxonomic_group", 
+                 "Quarantine status" = "quarantine_status",
+                 "Presence in Europe" = "presence_in_europe", 
+                 "Entry" = "entry_median", 
+                 "Establishment and spread" = "establishment_and_spread_median",
+                 "Invasion" = "invasion_median", 
+                 "Impact" = "impact_median",
+                 "Preventability" = "preventability_median",
+                 "Controllability"= "controlability_median",
+                 "Manageability"= "manageability_median",
                  "Assessed, month/year" = "assessment_date"),
     container = tbl_hdr_all, # -> Transforms the table header into 2 rows. To make changes go to 'tbl_hdr_all' in functions.R
     rownames = TRUE,
@@ -447,38 +471,38 @@ function(input, output, session) {
     class = "cell-border stripe",
     
     #To use the links in the column 'EPPO Codes', 'escape=FALSE' should be enabled:
-    escape = FALSE) %>% 
+    escape = FALSE) |> 
       # escape = c(1,2, 4:13)) %>% 
       
       formatRound(c("Entry","Establishment and spread", "Invasion", 
-                    "Impact", "Preventability", "Controllability", "Manageability"), 3) %>%
-      formatStyle("Pest",  fontWeight = "bold", fontStyle = "normal") %>%
+                    "Impact", "Preventability", "Controllability", "Manageability"), 3) |> 
+      formatStyle("Pest",  fontWeight = "bold", fontStyle = "normal") |> 
       
       formatStyle("Entry",
-                  background = styleColorBar(cleanfinnprioresults$maahantulo_hallinnan_kanssa_mediaani, "#DAE375"),
+                  background = styleColorBar(cleanfinnprioresults$entry_median, "#DAE375"),
                   backgroundSize = "98% 88%",
                   backgroundRepeat = "no-repeat",
-                  backgroundPosition = "center") %>%
+                  backgroundPosition = "center") |> 
       formatStyle("Establishment and spread",
-                  background = styleColorBar(cleanfinnprioresults$asettuminen_ja_leviaminen_mediaani, "#6D9F80"),
+                  background = styleColorBar(cleanfinnprioresults$establishment_and_spread_median, "#6D9F80"),
                   backgroundSize = "98% 88%",
                   backgroundRepeat = "no-repeat",
-                  backgroundPosition = "center") %>%
+                  backgroundPosition = "center") |> 
       formatStyle("Invasion",
-                  background = styleColorBar(cleanfinnprioresults$invaasion_todennakoisyys_hallinnan_kanssa_mediaani, "#CEB888"),
+                  background = styleColorBar(cleanfinnprioresults$invasion_median, "#CEB888"),
                   backgroundSize = "98% 88%",
                   backgroundRepeat = "no-repeat",
-                  backgroundPosition = "center") %>%
+                  backgroundPosition = "center") |> 
       formatStyle("Impact",
-                  background = styleColorBar(cleanfinnprioresults$vaikutukst_mediaani, "#DE4C9A"),
+                  background = styleColorBar(cleanfinnprioresults$impact_median, "#DE4C9A"),
                   backgroundSize = "98% 88%",
                   backgroundRepeat = "no-repeat",
-                  backgroundPosition = "center") %>%
+                  backgroundPosition = "center") |> 
       formatStyle("Manageability",
-                  background = styleColorBar(cleanfinnprioresults$vaikutukst_mediaani, "#ADD2EE"),
+                  background = styleColorBar(cleanfinnprioresults$manageability_median, "#ADD2EE"),
                   backgroundSize = "98% 88%",
                   backgroundRepeat = "no-repeat",
-                  backgroundPosition = "center") %>%
+                  backgroundPosition = "center") |> 
       formatDate("Assessed, month/year", method =  "toLocaleDateString", 
                  params = list(
                    'en-US', 
@@ -507,7 +531,7 @@ function(input, output, session) {
     req(input$Codes)
     # Filter the questions' groups based on the info in one column using dropdown menu -> Entry, Establishment and spread,Ipact, Management:
     pestquestion_codes <- reactive({  
-      pestquestions %>%
+      pestquestions |> 
         filter(Codes %in% input$Codes)
     }) 
     
@@ -539,7 +563,7 @@ function(input, output, session) {
         ## Removes the search box above the table & the text with number of rows under the table:
         dom = "t"       
       ),
-      rownames = FALSE) %>%
+      rownames = FALSE) |> 
       
       
       ### Formating specific cells/words in the table 
@@ -553,7 +577,7 @@ function(input, output, session) {
                   fontStyle = styleEqual(c("min", "max"),
                                          c('italic', 'italic'))
                   
-      ) %>%
+      ) |> 
       
       formatStyle(input$Codes == "ENT",
                   "Question",
@@ -597,10 +621,10 @@ function(input, output, session) {
   output$table_hv <- DT::renderDataTable({
     
     #The format of the following columns is converted from character to factor, so the selectize inputs (list of filter options) to be available:
-    hv$tuhoojastatus_eu_2016_2031_mukaan <- as.factor(hv$tuhoojastatus_eu_2016_2031_mukaan)
+    hv$quarantine_status <- as.factor(hv$quarantine_status)
     
-    DT::datatable(hv, colnames = c("Pest" = "tuhooja",
-                                   "Quarantine status" = "tuhoojastatus_eu_2016_2031_mukaan",
+    DT::datatable(hv, colnames = c("Pest" = "pest",
+                                   "Quarantine status" = "quarantine_status",
                                    "Entry, rank" = "rank_entry",
                                    "Entry, hypervolume" = "hv_entry",
                                    "Establishment and spread, rank" = "rank_establishment",
@@ -628,8 +652,8 @@ function(input, output, session) {
       )
     ),
     #class = "cell-border stripe",
-    filter = "top")  %>%
-      formatStyle("Pest",  fontWeight = "bold", fontStyle = "normal") %>%
+    filter = "top") |> 
+      formatStyle("Pest",  fontWeight = "bold", fontStyle = "normal") |> 
       formatRound(c("Entry, hypervolume", "Establishment and spread, hypervolume", "Invasion, hypervolume", "Impact, hypervolume"), 2)
     
   })
@@ -643,7 +667,7 @@ function(input, output, session) {
     Sys.sleep(1.5)
     t <- ggplot(hv, aes(area = hv_impact, fill = rank_impact, 
                         subgroup = rank_impact, 
-                        label = paste(tuhooja))) + 
+                        label = paste(pest))) + 
       geom_treemap() +
       geom_treemap_subgroup_border(color = "#DB4258")+
       geom_treemap_subgroup_text(place = "centre", grow = TRUE, alpha = 0.5, color = "#CEB888", min.size = 0)+
@@ -658,13 +682,13 @@ function(input, output, session) {
       {switch(input$switch_tree,
               "1" = aes(area = hv_entry, fill = rank_entry, 
                         subgroup = rank_entry, 
-                        label = paste(tuhooja)),
+                        label = paste(pest)),
               "2" = aes(area = hv_establishment, fill = rank_establishment, 
                         subgroup = rank_establishment, 
-                        label = paste(tuhooja)),
+                        label = paste(pest)),
               "3" = aes(area = hv_invasion, fill = rank_invasion, 
                         subgroup = rank_invasion, 
-                        label = paste(tuhooja))
+                        label = paste(pest))
       )
       }
     
