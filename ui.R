@@ -4,7 +4,7 @@
 
 ui <- function(request){
   
-  navbarPage("FinnPRIO-Explorer",
+  navbarPage("FinnPRIO Explorer Adapted",
              theme = shinythemes::shinytheme("sandstone"),
              header = tagList(
                # Initialize shinyjs
@@ -342,7 +342,7 @@ ui <- function(request){
                                       wellPanel( 
                                         p(tags$p(
                                           tags$b(style = "font-size:13px;",
-                                                 "FinnPRIO-Explorer facilitates examination of assessments made with the FinnPRIO model", 
+                                                 "FinnPRIO Explorer Adapted facilitates examination of assessments made with the FinnPRIO model", 
                                                  tags$a("(Heikkila et al. 2016)",href="https://doi.org/10.1007/s10530-016-1123-4", target="_blank"),". It was developed in 
                                                  the Risk Assessment Unit of the Finnish Food Authority, and it contains all the FinnPRIO assessments done for Finland.")),
                                           tags$br(),
@@ -365,7 +365,7 @@ ui <- function(request){
                                           
                                           tags$p(),
                                           tags$p(style = "font-size:13px;",
-                                                 "In FinnPRIO-Explorer, summary statistics (median and 25th and 75th percentiles) of the score distributions 
+                                                 "In FinnPRIO Explorer Adapted, summary statistics (median and 25th and 75th percentiles) of the score distributions 
                                                  can be explored in the tab 'Plot pests on a graph' while ranking that is based on the whole probability 
                                                  distributions can be studied in the tab 'Rank pests'."),
                                           tags$br(),
