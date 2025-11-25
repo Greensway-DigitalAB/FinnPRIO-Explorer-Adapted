@@ -24,39 +24,65 @@ sim_data <- simulations |>
   ungroup() |> 
   ## complete the data
   left_join(simulationSummaries) |> 
-  select(idSimulation, variable, q25, median, q75) |> 
+  select(idSimulation, variable, q5, q25, median, mean, q75, q95) |> 
   # 2. Pivot wider so each variable becomes columns with suffixes
   pivot_wider(
     names_from = variable,
-    values_from = c(q25, median, q75),
+    values_from = c(q5, q25, median, mean, q75, q95),
     names_glue = "{variable}_{.value}"
   ) |> 
-  select(idSimulation, ENTRYA_q25, ENTRYA_median, ENTRYA_q75,
-         ESTABLISHMENT_q25, ESTABLISHMENT_median, ESTABLISHMENT_q75,
-         INVASIONA_q25, INVASIONA_median, INVASIONA_q75,
-         IMPACT_q25, IMPACT_median, IMPACT_q75,
-         PREVENTABILITY_median, CONTROLLABILITY_median, MANAGEABILITY_median)
+  select(idSimulation, 
+         ENTRYA_q25, ENTRYA_median, ENTRYA_q75, ENTRYA_q5, ENTRYA_mean, ENTRYA_q95,
+         ENTRYB_q25, ENTRYB_median, ENTRYB_q75, ENTRYB_q5, ENTRYB_mean, ENTRYB_q95,
+         ESTABLISHMENT_q25, ESTABLISHMENT_median, ESTABLISHMENT_q75, ESTABLISHMENT_q5, ESTABLISHMENT_mean, ESTABLISHMENT_q95,
+         INVASIONA_q25, INVASIONA_median, INVASIONA_q75, INVASIONA_q5, INVASIONA_mean, INVASIONA_q95,
+         IMPACT_q25, IMPACT_median, IMPACT_q75, IMPACT_q5, IMPACT_mean, IMPACT_q95,
+         PREVENTABILITY_median, PREVENTABILITY_mean, 
+         CONTROLLABILITY_median, CONTROLLABILITY_mean, 
+         MANAGEABILITY_median,  MANAGEABILITY_mean, 
+         RISKA_median, RISKA_mean, RISKB_median, RISKB_mean)
 # "RISKA_q25"              "RISKB_q25" 
 
 cleanfinnprioresults <- species_data |> 
   left_join(sim_data) |>
   select(-idSimulation) |> 
   # 3. Rename columns to match your desired format
-  rename("entry_25perc" = ENTRYA_q25, 
+  rename(
+         "entry_5perc" = ENTRYA_q5, 
+         "entry_25perc" = ENTRYA_q25, 
          "entry_median" = ENTRYA_median, 
+         "entry_mean" = ENTRYA_mean, 
          "entry_75perc" = ENTRYA_q75,
+         "entry_95perc" = ENTRYA_q95,
+         "establishment_and_spread_5perc" = ESTABLISHMENT_q5,
          "establishment_and_spread_25perc" = ESTABLISHMENT_q25, 
          "establishment_and_spread_median" = ESTABLISHMENT_median, 
+         "establishment_and_spread_mean" = ESTABLISHMENT_mean,
          "establishment_and_spread_75perc" = ESTABLISHMENT_q75,
+         "establishment_and_spread_95perc" = ESTABLISHMENT_q95,
+         "invasion_5perc" = INVASIONA_q5,
          "invasion_25perc" = INVASIONA_q25, 
          "invasion_median" = INVASIONA_median, 
+         "invasion_mean" = INVASIONA_mean,
          "invasion_75perc" = INVASIONA_q75,
+         "invasion_95perc" = INVASIONA_q95,
+         "impact_5perc" = IMPACT_q5,
          "impact_25perc" = IMPACT_q25, 
          "impact_median" = IMPACT_median, 
+         "impact_mean" = IMPACT_mean,
          "impact_75perc" = IMPACT_q75,
-         "preventability_median" = PREVENTABILITY_median, 
+         "impact_95perc" = IMPACT_q95,
+         "preventability_median" = PREVENTABILITY_median,
+         "preventability_mean" = PREVENTABILITY_mean,
          "controlability_median" = CONTROLLABILITY_median, 
-         "manageability_median" = MANAGEABILITY_median)
+         "controlability_mean" = CONTROLLABILITY_mean,
+         "manageability_median" = MANAGEABILITY_median,
+         "manageability_mean" = MANAGEABILITY_mean,
+         "riskA_median" = RISKA_median,
+         "riskA_mean" = RISKA_mean,
+         "riskB_median" = RISKB_median,
+         "riskB_mean" = RISKB_mean
+         )
 
 
 # print(cleanfinnprioresults)
