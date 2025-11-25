@@ -2,10 +2,7 @@
 function(input, output, session) {
   observe_helpers()
   
-  ###############################################################
   # Filter data:----
-  ###############################################################
-  
   ## Subset data -> filter data based on the input selections:-----
   selected_status <- reactive({
     req(cleanfinnprioresults)
@@ -101,23 +98,15 @@ function(input, output, session) {
            impact_25perc,
            impact_median,
            impact_75perc
-           
     )
   })
   
   
-  ###############################################################
   # Display data on the tab-panels:----
-  ###############################################################
-  
-  ###############################################################
-  
   ## Data used for generating the table from brush in "1. Select pests to plot"-tab: ----
   selected_pests <- reactive({
-    
     infotable()  |> 
       brushedPoints(input$plot_brush, input$xaxis, input$yaxis)
-    
   })
   
   ## Generate table from the plot using brush in "1. Select pests to plot"-tab:----
@@ -176,47 +165,35 @@ function(input, output, session) {
                     ## All results appear on same page:
                     paging=FALSE)) |> 
       
-      formatStyle("Pest",  color = "black", fontWeight = "bold", fontStyle = "normal") |> 
-      formatRound(c("Entry, min", "Entry, median", "Entry, max", "Establishment and spread, min", 
-                    "Establishment and spread, median", "Establishment and spread, max", 
+      formatStyle("Pest",  color = "black", fontWeight = "bold", fontStyle = "normal") |>
+      formatRound(c("Entry, min", "Entry, median", "Entry, max", "Establishment and spread, min",
+                    "Establishment and spread, median", "Establishment and spread, max",
                     "Invasion, min", "Invasion, median", "Invasion, max",
-                    "Impact, min", "Impact, median", "Impact, max"), 2) |> 
+                    "Impact, min", "Impact, median", "Impact, max"), 2) |>
       formatStyle("Entry, median",
                   background = styleColorBar(cleanfinnprioresults$entry_median, "#DAE375"),
                   backgroundSize = "98% 88%",
                   backgroundRepeat = "no-repeat",
-                  backgroundPosition = "center") |> 
+                  backgroundPosition = "center") |>
       formatStyle("Establishment and spread, median",
                   background = styleColorBar(cleanfinnprioresults$establishment_and_spread_median, "#6D9F80"),
                   backgroundSize = "98% 88%",
                   backgroundRepeat = "no-repeat",
-                  backgroundPosition = "center") |> 
+                  backgroundPosition = "center") |>
       formatStyle("Invasion, median",
                   background = styleColorBar(cleanfinnprioresults$invasion_median, "#CEB888"),
                   backgroundSize = "98% 88%",
                   backgroundRepeat = "no-repeat",
-                  backgroundPosition = "center") |> 
+                  backgroundPosition = "center") |>
       formatStyle("Impact, median",
-                  background = styleColorBar(cleanfinnprioresults$impact_mediaani, "#DE4C9A"),
+                  background = styleColorBar(cleanfinnprioresults$impact_median, "#DE4C9A"),
                   backgroundSize = "98% 88%",
                   backgroundRepeat = "no-repeat",
-                  backgroundPosition = "center") 
+                  backgroundPosition = "center")
     
   })
   
-  ###############################################################
-  
-  # Assign colors to each quarantine status for the plot:
-  cols <- c("Other quarantine"="#D0006F",
-            "Priority"="#F7CE3C",
-            "Protected zone" ="#6D9F80",
-            "Emergency measures"= "#FF6F49", # "#CEB888",
-            "RNQP"="#004F71",
-            "Other non-quarantine"="#ADD2EE")
-  
-  
   ## Generate a plot in "1. Select pests to plot"-tab:----
-  
   plot_output <- reactive({   
     req(selected_status())
     
@@ -261,10 +238,7 @@ function(input, output, session) {
       coord_cartesian(xlim = c(input$xlims[1], input$xlims[2]), ylim = c(input$ylims[1], input$ylims[2]), expand = TRUE)
     
     
-    #####################  
     # Plot conditions:---
-    ##################### 
-    
     # Add label to X:
     if(input$xaxis == "invasion_median") {
       p <- p+labs(x = "Invasion score") 
@@ -380,9 +354,7 @@ function(input, output, session) {
     plot_output()
   })
   
-  
-  ###############################################################
-  # Download the plot:----
+  ## Download the plot:----
   
   output$download <- downloadHandler(
     filename = function() {
@@ -394,9 +366,6 @@ function(input, output, session) {
   )
   
 
-  ###############################################################
-  ###############################################################
-  
   ## Generate table with all assessed pests in "2. Show pests in data table"-tab:-----
   output$table_all <- DT::renderDataTable({
     #The format of the following columns is converted from character to factor, so the selectize inputs (list in filter options) to be available:
@@ -516,9 +485,6 @@ function(input, output, session) {
   
   
   
-  ###############################################################
-  ###############################################################
-  
   # observe({
   #   updateSelectInput(session,"pest1_sel",choices=colnames(pestquestions))
   #   #updateSelectInput(session,"sizes",choices=colnames(df_p_samp()))
@@ -592,8 +558,6 @@ function(input, output, session) {
   })
   
   
-  ###############################################################
-  
   ## Show explanations for the pathways in Entry questions in "3. Compare pests by questions"-tab:----
   output$helpPW <- renderUI({
     req(input$Codes)
@@ -612,10 +576,6 @@ function(input, output, session) {
       )
     }
   })
-  
-  
-  ###############################################################
-  ###############################################################
   
   ## Generate a table with ranks and HV in "4. Ranking pests"-tab:-----
   output$table_hv <- DT::renderDataTable({
@@ -657,9 +617,6 @@ function(input, output, session) {
       formatRound(c("Entry, hypervolume", "Establishment and spread, hypervolume", "Invasion, hypervolume", "Impact, hypervolume"), 2)
     
   })
-  
-  
-  ###############################################################
   
   ## Generate a treemap for ranks and hypervolume scores:----
   output$hv_tree <- renderPlot ({

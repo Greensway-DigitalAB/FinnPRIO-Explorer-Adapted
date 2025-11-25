@@ -1,5 +1,3 @@
-
-################################################################################
 # Define UI for application that allow to explore FinnPRIO results: ----
 
 ui <- function(request){
@@ -29,7 +27,7 @@ ui <- function(request){
                             fluidRow(column(6,
                                             tags$h4(strong("FinnPRIO sections to be plotted"), style="color:#7C6A56"),
                                             
-                                            # Select variable for Y-axis:----
+                                            ## Select variable for Y-axis:----
                                             selectizeInput("yaxis", 
                                                            label = "y-axis",
                                                            choices = c("Entry" = "entry_median",
@@ -38,7 +36,7 @@ ui <- function(request){
                                                                        "Impact" = "impact_median"),
                                                            selected = "impact_median"
                                             ),
-                                            # Select variable for X-axis:----
+                                            ## Select variable for X-axis:----
                                             selectizeInput("xaxis", 
                                                            label = "x-axis",
                                                            choices = c("Entry" = "entry_median",
@@ -50,7 +48,7 @@ ui <- function(request){
                                             tags$hr(style="border-color: gray;"),
                                             tags$h4(strong("Quarantine status"), style="color:#7C6A56"),
                                             
-                                            # Select pests' status according to the new EU Regulation:----
+                                            ## Select pests' status according to the new EU Regulation:----
                                             checkboxGroupInput(inputId = "quarantine_status",
                                                                label = NULL,
                                                                choices = quaran$name,
@@ -61,7 +59,7 @@ ui <- function(request){
                                             tags$hr(style="border-color: gray;"),
                                             tags$h4(strong("Taxonomic group"), style="color:#7C6A56"),
                                             
-                                            #Select pest taxonomic group:----
+                                            ## Select pest taxonomic group:----
                                             checkboxGroupInput(inputId = "taxonomic_group",
                                                                label = NULL,
                                                                choices = taxa$name,
@@ -74,7 +72,7 @@ ui <- function(request){
                             column(6, offset = 0,
                                    tags$h4(strong("Presence in Europe"), style="color:#7C6A56"),
                                    
-                                   # Select pest presence in Europe: ----
+                                   ## Select pest presence in Europe: ----
                                    checkboxGroupInput(inputId = "presence_in_europe",
                                                       label = NULL, 
                                                       choices = c("Present" = TRUE,
@@ -84,7 +82,7 @@ ui <- function(request){
                                    ),
                                    
                                    tags$hr(style="border-color: gray;"),
-                                   # Select threatened sectors: ----
+                                   ## Select threatened sectors: ----
                                    uiOutput("threat_checkboxes"),
                                    # tags$h4(strong("Threatened sector"), style="color:#7C6A56"),
                                    
@@ -133,7 +131,7 @@ ui <- function(request){
                               ),
                               
                               column(9,
-                                     # Scores selections----
+                                     ## Scores selections----
                                      sliderInput(inputId = "entry_score", 
                                                  label = NULL,
                                                  min = 0, max = 1, value = c(0,1), step = 0.05, width = "350px"),
@@ -156,7 +154,7 @@ ui <- function(request){
                             fluidRow(
                               column(9,
                                      tags$br(),
-                                     # Display a plot that presents Invasion vs. Impact:
+                                     ## Display a plot that presents Invasion vs. Impact: --
                                      plotOutput(outputId = "pest_plot",
                                                 height = "650px", 
                                                 brush = brushOpts(id = "plot_brush", resetOnNew = TRUE)
@@ -315,26 +313,26 @@ ui <- function(request){
                       
              ),
              
-             tabPanel("4. Rank pests",
-                      tags$h4(strong("Ranking of the pests based on stochastic dominance and hypervolume"), style="color:#7C6A56"),
-                      radioButtons(inputId = "switch_tree",
-                                   label = NULL,
-                                   choices = c("Entry" = 1, 
-                                               "Establishment and spread" = 2,
-                                               "Invasion" = 3,
-                                               "Impact" = 4
-                                   ), 
-                                   selected = 4,
-                                   inline = TRUE),
-                      
-                      shinycssloaders::withSpinner(plotOutput("hv_tree", width = "100%", height = "600px"),
-                                                   type = 7, color = "#7C6A56", size = 1),
-                      
-                      
-                      tags$br(),
-                      helpText(tags$sup(1), "Note that the upper row of the table's header is not visible in the downloaded table."),
-                      DT::dataTableOutput(outputId = "table_hv")
-             ),
+             # tabPanel("4. Rank pests",
+             #          tags$h4(strong("Ranking of the pests based on stochastic dominance and hypervolume"), style="color:#7C6A56"),
+             #          radioButtons(inputId = "switch_tree",
+             #                       label = NULL,
+             #                       choices = c("Entry" = 1, 
+             #                                   "Establishment and spread" = 2,
+             #                                   "Invasion" = 3,
+             #                                   "Impact" = 4
+             #                       ), 
+             #                       selected = 4,
+             #                       inline = TRUE),
+             #          
+             #          shinycssloaders::withSpinner(plotOutput("hv_tree", width = "100%", height = "600px"),
+             #                                       type = 7, color = "#7C6A56", size = 1),
+             #          
+             #          
+             #          tags$br(),
+             #          helpText(tags$sup(1), "Note that the upper row of the table's header is not visible in the downloaded table."),
+             #          DT::dataTableOutput(outputId = "table_hv")
+             # ),
              
              tabPanel("About the app",
                       fluidRow(column(6,
@@ -468,5 +466,3 @@ ui <- function(request){
              ))
   
 }
-
-################################################################################
