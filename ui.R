@@ -143,10 +143,10 @@ ui <- function(request){
                                      wellPanel( 
                                        tags$h4(strong("Show")),
                                        # Test... input for median or mean
-                                       selectInput(inputId = "center",
-                                                   label = "Center tendency measure",
-                                                   choices = c("median", "mean"),
-                                                   width = "auto")
+                                       # selectInput(inputId = "center",
+                                       #             label = "Center tendency measure",
+                                       #             choices = c("median", "mean"),
+                                       #             width = "auto"),
                                        # Pests' names on the plot:
                                        checkboxInput(inputId = "pest_name",
                                                      label = "Pest names",

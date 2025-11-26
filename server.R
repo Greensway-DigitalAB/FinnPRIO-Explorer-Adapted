@@ -87,6 +87,7 @@ function(input, output, session) {
            taxonomic_group, 
            presence_in_europe,
            entry_25perc,
+           # paste0("entry_", input$center), #median,
            entry_median,
            entry_75perc,
            establishment_and_spread_25perc,

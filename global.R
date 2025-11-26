@@ -1,4 +1,4 @@
-v <- numeric_version("0.0.1")
+v <- numeric_version("1.0.0")
 library(shiny)
 library(shinythemes)
 library(shinyhelper)
