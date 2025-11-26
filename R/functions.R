@@ -31,7 +31,7 @@ tbl_hdr_all <- htmltools::withTags(table(
       th(class = 'dt-center', rowspan = 2, 'Taxonomic group'),
       th(class = 'dt-center', rowspan = 2, 'Quarantine status'),
       th(class = 'dt-center', rowspan = 2, 'Presence in Europe'),
-      th(class = 'dt-center', colspan = 7, 'Median scores for'),
+      th(class = 'dt-center', colspan = 8, 'Median scores for'),
       th(class = 'dt-left', rowspan = 2, 'Assessed, month/year')
     ),
     tr(
@@ -54,7 +54,7 @@ tbl_hdr_all_2 <- htmltools::withTags(table(
       th(class = 'dt-center', rowspan = 2, 'Taxonomic group'),
       th(class = 'dt-center', rowspan = 2, 'Quarantine status'),
       th(class = 'dt-center', rowspan = 2, 'Presence in Europe'),
-      th(class = 'dt-center', colspan = 7, 'Mean scores for'),
+      th(class = 'dt-center', colspan = 8, 'Mean scores for'),
       th(class = 'dt-left', rowspan = 2, 'Assessed, month/year')
     ),
     tr(

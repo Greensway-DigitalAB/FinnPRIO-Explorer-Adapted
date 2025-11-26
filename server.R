@@ -164,7 +164,7 @@ function(input, output, session) {
                                         exportOptions = list(columns = ":visible"))
                     ),
                     ## All results appear on same page:
-                    paging=FALSE)) |> 
+                    paging = FALSE)) |> 
       
       formatStyle("Pest",  color = "black", fontWeight = "bold", fontStyle = "normal") |>
       formatRound(c("Entry, min", "Entry, median", "Entry, max", "Establishment and spread, min",
