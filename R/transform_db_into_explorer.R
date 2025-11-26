@@ -78,10 +78,10 @@ cleanfinnprioresults <- species_data |>
          "controlability_mean" = CONTROLLABILITY_mean,
          "manageability_median" = MANAGEABILITY_median,
          "manageability_mean" = MANAGEABILITY_mean,
-         "riskA_median" = RISKA_median,
-         "riskA_mean" = RISKA_mean,
-         "riskB_median" = RISKB_median,
-         "riskB_mean" = RISKB_mean
+         "riska_median" = RISKA_median,
+         "riska_mean" = RISKA_mean,
+         "riskb_median" = RISKB_median,
+         "riskb_mean" = RISKB_mean
          )
 
 
@@ -130,7 +130,12 @@ answers_long <- answers_complete |>
   select(-idAnswer ) |> 
   left_join(questions_main, by = "idQuestion") |> 
   # 2. Join with assessments to get pest IDs
-  left_join(assessments, by = "idAssessment") |> 
+  left_join(assessments |> 
+              group_by(idPest) |>
+              arrange(desc(valid), desc(endDate)) |>   # valid first, then latest date
+              slice(1) |>                              # pick the top row per group
+              ungroup(), 
+            by = "idAssessment") |> 
   # 3. Join with pests to get pest names
   left_join(pests, by = "idPest") |> 
   # 4. Create a column for answer type (most likely, min, max)

@@ -45,7 +45,17 @@ assessments <- dbReadTable(consql, "assessments")
 answers_main <- dbReadTable(consql, "answers")
 answers_entry <- dbReadTable(consql, "pathwayAnswers")
 
-simulations <- dbReadTable(consql, "simulations")
+# simulations <- dbReadTable(consql, "simulations")
+simulations <- dbGetQuery(consql, "SELECT
+       s.*
+      FROM simulations s
+      JOIN assessments a ON s.idAssessment = a.idAssessment
+      WHERE a.valid = 1
+      AND s.date = (
+        SELECT MAX(date)
+        FROM simulations
+        WHERE idAssessment = s.idAssessment )")
+                          
 simulationSummaries <- dbReadTable(consql, "simulationSummaries")
 
 

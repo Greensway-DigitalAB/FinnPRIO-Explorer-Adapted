@@ -35,7 +35,31 @@ tbl_hdr_all <- htmltools::withTags(table(
       th(class = 'dt-left', rowspan = 2, 'Assessed, month/year')
     ),
     tr(
-      lapply(rep(c('Entry', 'Establishment and spread', 'Invasion', 'Impact', 'Preventability', 'Controllability', 'Manageability'), 1), th)
+      lapply(rep(c('Entry', 'Establishment and spread', 'Invasion', 'Impact', 
+                   'Risk A', 'Preventability', 'Controllability', 'Manageability'), 1), th)
+      
+    )
+  )
+))
+
+# Format table header for the table with all pests
+tbl_hdr_all_2 <- htmltools::withTags(table(
+  class = 'display',
+  thead(
+    tr(
+      th(rowspan = 2, ''),
+      th(class = 'dt-center', rowspan = 2, 'Pest'),
+      # th(class = 'dt-center', rowspan = 2, 'EPPO code'),
+      th(class = 'dt-center', rowspan = 2, 'EPPO Code'),
+      th(class = 'dt-center', rowspan = 2, 'Taxonomic group'),
+      th(class = 'dt-center', rowspan = 2, 'Quarantine status'),
+      th(class = 'dt-center', rowspan = 2, 'Presence in Europe'),
+      th(class = 'dt-center', colspan = 7, 'Mean scores for'),
+      th(class = 'dt-left', rowspan = 2, 'Assessed, month/year')
+    ),
+    tr(
+      lapply(rep(c('Entry', 'Establishment and spread', 'Invasion', 'Impact', 
+                   'Risk A', 'Preventability', 'Controllability', 'Manageability'), 1), th)
       
     )
   )

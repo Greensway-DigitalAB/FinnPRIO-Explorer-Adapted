@@ -392,6 +392,7 @@ function(input, output, session) {
                          establishment_and_spread_median,
                          invasion_median, 
                          impact_median,
+                         riska_median,
                          preventability_median,
                          controlability_median,
                          manageability_median,
@@ -409,9 +410,10 @@ function(input, output, session) {
                  "Establishment and spread" = "establishment_and_spread_median",
                  "Invasion" = "invasion_median", 
                  "Impact" = "impact_median",
+                 "Risk A" = "riska_median",
                  "Preventability" = "preventability_median",
-                 "Controllability"= "controlability_median",
-                 "Manageability"= "manageability_median",
+                 "Controllability" = "controlability_median",
+                 "Manageability" = "manageability_median",
                  "Assessed, month/year" = "assessment_date"),
     container = tbl_hdr_all, # -> Transforms the table header into 2 rows. To make changes go to 'tbl_hdr_all' in functions.R
     rownames = TRUE,
@@ -444,7 +446,7 @@ function(input, output, session) {
       # escape = c(1,2, 4:13)) %>% 
       
       formatRound(c("Entry","Establishment and spread", "Invasion", 
-                    "Impact", "Preventability", "Controllability", "Manageability"), 3) |> 
+                    "Impact", "Risk A", "Preventability", "Controllability", "Manageability"), 3) |> 
       formatStyle("Pest",  fontWeight = "bold", fontStyle = "normal") |> 
       
       formatStyle("Entry",
@@ -467,6 +469,11 @@ function(input, output, session) {
                   backgroundSize = "98% 88%",
                   backgroundRepeat = "no-repeat",
                   backgroundPosition = "center") |> 
+      formatStyle("Risk A",
+                  background = styleColorBar(cleanfinnprioresults$riska_median, "#DE4C9A"),
+                  backgroundSize = "98% 88%",
+                  backgroundRepeat = "no-repeat",
+                  backgroundPosition = "center") |> 
       formatStyle("Manageability",
                   background = styleColorBar(cleanfinnprioresults$manageability_median, "#ADD2EE"),
                   backgroundSize = "98% 88%",
@@ -483,6 +490,129 @@ function(input, output, session) {
     
   })
   
+  ### Table with mean ---
+  output$table_all_2 <- DT::renderDataTable({
+    #The format of the following columns is converted from character to factor, so the selectize inputs (list in filter options) to be available:
+    cleanfinnprioresults$quarantine_status <- as.factor(cleanfinnprioresults$quarantine_status)
+    cleanfinnprioresults$taxonomic_group <- as.factor(cleanfinnprioresults$taxonomic_group)
+    cleanfinnprioresults$presence_in_europe <- as.factor(cleanfinnprioresults$presence_in_europe)
+    
+    #Creating links to EPPO Global Database:
+    eppocode = cleanfinnprioresults$eppo_code
+    base_link = "https://gd.eppo.int/taxon/"
+    eppoGD = paste0('<a href="', base_link, eppocode,'" target="_blank">', eppocode, '</a>')
+    #Add new column to the datatable:
+    # cleanfinnprioresults[,  ':='(eppo = eppoGD)]
+    cleanfinnprioresults$eppo <- eppoGD
+    
+    DT::datatable(select(cleanfinnprioresults, 
+                         pest, 
+                         #eppo_code,
+                         eppo,
+                         taxonomic_group,
+                         quarantine_status,
+                         presence_in_europe, 
+                         entry_median,
+                         establishment_and_spread_mean,
+                         invasion_mean, 
+                         impact_mean,
+                         riska_mean,
+                         preventability_mean,
+                         controlability_mean,
+                         manageability_mean,
+                         assessment_date
+    ),
+    
+    colnames = c("Sort" = "pest", 
+                 "Pest" = "pest", 
+                 #"EPPO code" = "eppo_code",
+                 "EPPO Code" = "eppo",
+                 "Taxonomic group" = "taxonomic_group", 
+                 "Quarantine status" = "quarantine_status",
+                 "Presence in Europe" = "presence_in_europe", 
+                 "Entry" = "entry_median", 
+                 "Establishment and spread" = "establishment_and_spread_mean",
+                 "Invasion" = "invasion_mean", 
+                 "Impact" = "impact_mean",
+                 "Risk A" = "riska_mean",
+                 "Preventability" = "preventability_mean",
+                 "Controllability"= "controlability_mean",
+                 "Manageability"= "manageability_mean",
+                 "Assessed, month/year" = "assessment_date"),
+    container = tbl_hdr_all_2, # -> Transforms the table header into 2 rows. To make changes go to 'tbl_hdr_all' in functions.R
+    rownames = TRUE,
+    extensions = "Buttons",
+    filter = list(position = 'top', clear = FALSE),
+    options = list(
+      #pageLength = 15,
+      #columnDefs = list(),
+      #fixedHeader = TRUE,
+      
+      ## Hide the first column that contains rownames
+      columnDefs = list(list(targets = c(0), visible = FALSE)),
+      
+      paging = FALSE,
+      autoWidth = TRUE, 
+      
+      # Display and customize the buttons:
+      dom = "Bfrtip", 
+      buttons = list(list(extend = "excel", 
+                          text = '<span class="glyphicon glyphicon-th"></span> Excel <sup>1</sup>', title = NULL, 
+                          exportOptions = list(columns = ":visible")), 
+                     list(extend = "csv", text = '<span class="glyphicon glyphicon-download-alt"></span> CSV <sup>1</sup>', title = NULL, 
+                          exportOptions = list(columns = ":visible"))
+      )
+    ),
+    class = "cell-border stripe",
+    
+    #To use the links in the column 'EPPO Codes', 'escape=FALSE' should be enabled:
+    escape = FALSE) |> 
+      # escape = c(1,2, 4:13)) %>% 
+      
+      formatRound(c("Entry","Establishment and spread", "Invasion", 
+                    "Impact", "Risk A", "Preventability", "Controllability", "Manageability"), 3) |> 
+      formatStyle("Pest",  fontWeight = "bold", fontStyle = "normal") |> 
+      
+      formatStyle("Entry",
+                  background = styleColorBar(cleanfinnprioresults$entry_median, "#DAE375"),
+                  backgroundSize = "98% 88%",
+                  backgroundRepeat = "no-repeat",
+                  backgroundPosition = "center") |> 
+      formatStyle("Establishment and spread",
+                  background = styleColorBar(cleanfinnprioresults$establishment_and_spread_mean, "#6D9F80"),
+                  backgroundSize = "98% 88%",
+                  backgroundRepeat = "no-repeat",
+                  backgroundPosition = "center") |> 
+      formatStyle("Invasion",
+                  background = styleColorBar(cleanfinnprioresults$invasion_mean, "#CEB888"),
+                  backgroundSize = "98% 88%",
+                  backgroundRepeat = "no-repeat",
+                  backgroundPosition = "center") |> 
+      formatStyle("Impact",
+                  background = styleColorBar(cleanfinnprioresults$impact_mean, "#DE4C9A"),
+                  backgroundSize = "98% 88%",
+                  backgroundRepeat = "no-repeat",
+                  backgroundPosition = "center") |> 
+      formatStyle("Risk A",
+                  background = styleColorBar(cleanfinnprioresults$riska_mean, "#DE4C9A"),
+                  backgroundSize = "98% 88%",
+                  backgroundRepeat = "no-repeat",
+                  backgroundPosition = "center") |> 
+      formatStyle("Manageability",
+                  background = styleColorBar(cleanfinnprioresults$manageability_mean, "#ADD2EE"),
+                  backgroundSize = "98% 88%",
+                  backgroundRepeat = "no-repeat",
+                  backgroundPosition = "center") |> 
+      formatDate("Assessed, month/year", method =  "toLocaleDateString", 
+                 params = list(
+                   'en-US', 
+                   list(
+                     month = 'numeric',
+                     year = 'numeric' 
+                   )
+                 ))
+    
+  })
   
   
   # observe({

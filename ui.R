@@ -25,7 +25,7 @@ ui <- function(request){
                             h3(strong(style = "font-size:24px;","Selection criteria")),
                             
                             fluidRow(column(6,
-                                            tags$h4(strong("FinnPRIO sections to be plotted"), style="color:#7C6A56"),
+                                            tags$h4(strong("FinnPRIO sections to be plotted"), style = "color:#7C6A56"),
                                             
                                             ## Select variable for Y-axis:----
                                             selectizeInput("yaxis", 
@@ -85,34 +85,7 @@ ui <- function(request){
                                    ## Select threatened sectors: ----
                                    uiOutput("threat_checkboxes"),
                                    # tags$h4(strong("Threatened sector"), style="color:#7C6A56"),
-                                   
-                                   # checkboxGroupInput(inputId = "threatened_sek",
-                                   #                    label = "Trees and shrubs",
-                                   #                    choices = c("Conifers" = "havukasvit_uh",
-                                   #                                "Broadleaves" = "lehtipuut_ja_pensaat_uh",
-                                   #                                "Fruits" = "hedelmapuut_uh",
-                                   #                                "Berries" = "marjakasvit_uh"),
-                                   #                    selected = "havukasvit_uh"),
-                                   # 
-                                   # checkboxGroupInput(inputId = "threatened_sek2",
-                                   #                    label = "Open-field crops",
-                                   #                    choices = c("Potato" = "peruna_uh",                                                                                   
-                                   #                                "Sugar beet" = "sokerijuurikas_uh",
-                                   #                                "Vegetables" = "avomaavihannekset_uh",                                                                        
-                                   #                                "Other" = "muut_avomaakasvit_uh")),
-                                   # 
-                                   # 
-                                   # checkboxGroupInput(inputId = "threatened_sek3",
-                                   #                    label = "Greenhouse crops",
-                                   #                    choices = c("Cucumber" = "kasvihuonekurkku_uh",                                                                         
-                                   #                                "Tomato" = "kasvihuonetomaatti_uh",                                                                       
-                                   #                                "Pepper" = "kasvihuonepaprika_uh",                                                                        
-                                   #                                "Lettuce" = "kasvihuonesalaatti_uh",                                                                       
-                                   #                                "Ornamentals" = "kasvihuonekoristekasvit_uh")),
-                                   # checkboxGroupInput(inputId = "threatened_sek4",
-                                   #                    label = "Others",
-                                   #                    choices = c("Others" = "muut_uh")),
-                                   
+                            
                             )),
                             
                             tags$hr(style="border-color: gray;"),
@@ -169,6 +142,11 @@ ui <- function(request){
                               column(3,
                                      wellPanel( 
                                        tags$h4(strong("Show")),
+                                       # Test... input for median or mean
+                                       selectInput(inputId = "center",
+                                                   label = "Center tendency measure",
+                                                   choices = c("median", "mean"),
+                                                   width = "auto")
                                        # Pests' names on the plot:
                                        checkboxInput(inputId = "pest_name",
                                                      label = "Pest names",
@@ -266,9 +244,22 @@ ui <- function(request){
              ),
              
              tabPanel("2. Show pests in data table",
-                      helpText(tags$sup(1), "Note that the upper row of the table's header is not visible in the downloaded table."),
-                      #helpText(strong(style="color: #D2132E;", tags$sup(2), "Link to EPPO GD.")),
-                      DT::dataTableOutput(outputId = "table_all")
+                      tabsetPanel(id = "all_assessments",
+                                  tabPanel(#id = "all_assessments", 
+                                    title = tagList(icon("laptop-file", class = "fas"), "Assessments based on Median"),
+                                    value = 1,
+                                    helpText(tags$sup(1), "Note that the upper row of the table's header is not visible in the downloaded table."),
+                                    #helpText(strong(style="color: #D2132E;", tags$sup(2), "Link to EPPO GD.")),
+                                    DT::dataTableOutput(outputId = "table_all")
+                                  ),
+                                  tabPanel(#id = "all_assessments", 
+                                    title = tagList(icon("laptop-file", class = "fas"), "Assessments based on Mean"),
+                                    value = 2,
+                                    helpText(tags$sup(1), "Note that the upper row of the table's header is not visible in the downloaded table."),
+                                    DT::dataTableOutput(outputId = "table_all_2")
+                                  )
+                                  
+                      )
              ),
              
              tabPanel("3. Compare pests by questions",
