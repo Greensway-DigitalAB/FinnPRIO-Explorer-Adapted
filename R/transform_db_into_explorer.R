@@ -36,36 +36,38 @@ sim_data <- simulations |>
          ENTRYB_q25, ENTRYB_median, ENTRYB_q75, ENTRYB_q5, ENTRYB_mean, ENTRYB_q95,
          ESTABLISHMENT_q25, ESTABLISHMENT_median, ESTABLISHMENT_q75, ESTABLISHMENT_q5, ESTABLISHMENT_mean, ESTABLISHMENT_q95,
          INVASIONA_q25, INVASIONA_median, INVASIONA_q75, INVASIONA_q5, INVASIONA_mean, INVASIONA_q95,
+         INVASIONB_q25, INVASIONB_median, INVASIONB_q75, INVASIONB_q5, INVASIONB_mean, INVASIONB_q95,
          IMPACT_q25, IMPACT_median, IMPACT_q75, IMPACT_q5, IMPACT_mean, IMPACT_q95,
          PREVENTABILITY_median, PREVENTABILITY_mean, 
          CONTROLLABILITY_median, CONTROLLABILITY_mean, 
          MANAGEABILITY_median,  MANAGEABILITY_mean, 
-         RISKA_median, RISKA_mean, RISKB_median, RISKB_mean)
-# "RISKA_q25"              "RISKB_q25" 
+         RISKA_q25, RISKA_median,  RISKA_q75, RISKA_q5, RISKA_mean, RISKA_q95,
+         RISKB_q25, RISKB_median,  RISKB_q75, RISKB_q5, RISKB_mean, RISKB_q95)
+# 
 
 cleanfinnprioresults <- species_data |> 
   left_join(sim_data) |>
   select(-idSimulation) |> 
   # 3. Rename columns to match your desired format
   rename(
-         "entry_5perc" = ENTRYA_q5, 
-         "entry_25perc" = ENTRYA_q25, 
-         "entry_median" = ENTRYA_median, 
-         "entry_mean" = ENTRYA_mean, 
-         "entry_75perc" = ENTRYA_q75,
-         "entry_95perc" = ENTRYA_q95,
+         "entry_5perc" = ENTRYB_q5, 
+         "entry_25perc" = ENTRYB_q25, 
+         "entry_median" = ENTRYB_median, 
+         "entry_mean" = ENTRYB_mean, 
+         "entry_75perc" = ENTRYB_q75,
+         "entry_95perc" = ENTRYB_q95,
          "establishment_and_spread_5perc" = ESTABLISHMENT_q5,
          "establishment_and_spread_25perc" = ESTABLISHMENT_q25, 
          "establishment_and_spread_median" = ESTABLISHMENT_median, 
          "establishment_and_spread_mean" = ESTABLISHMENT_mean,
          "establishment_and_spread_75perc" = ESTABLISHMENT_q75,
          "establishment_and_spread_95perc" = ESTABLISHMENT_q95,
-         "invasion_5perc" = INVASIONA_q5,
-         "invasion_25perc" = INVASIONA_q25, 
-         "invasion_median" = INVASIONA_median, 
-         "invasion_mean" = INVASIONA_mean,
-         "invasion_75perc" = INVASIONA_q75,
-         "invasion_95perc" = INVASIONA_q95,
+         "invasion_5perc" = INVASIONB_q5,
+         "invasion_25perc" = INVASIONB_q25, 
+         "invasion_median" = INVASIONB_median, 
+         "invasion_mean" = INVASIONB_mean,
+         "invasion_75perc" = INVASIONB_q75,
+         "invasion_95perc" = INVASIONB_q95,
          "impact_5perc" = IMPACT_q5,
          "impact_25perc" = IMPACT_q25, 
          "impact_median" = IMPACT_median, 
@@ -78,10 +80,12 @@ cleanfinnprioresults <- species_data |>
          "controlability_mean" = CONTROLLABILITY_mean,
          "manageability_median" = MANAGEABILITY_median,
          "manageability_mean" = MANAGEABILITY_mean,
-         "riska_median" = RISKA_median,
-         "riska_mean" = RISKA_mean,
-         "riskb_median" = RISKB_median,
-         "riskb_mean" = RISKB_mean
+         "risk_5perc" = RISKB_q5,
+         "risk_25perc" = RISKB_q25,
+         "risk_median" = RISKB_median,
+         "risk_mean" = RISKB_mean,
+         "risk_75perc" = RISKB_q75,
+         "risk_95perc" = RISKB_q95,
          )
 
 

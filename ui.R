@@ -242,7 +242,6 @@ ui <- function(request){
                         )
                       )
              ),
-             
              tabPanel("2. Show pests in data table",
                       tabsetPanel(id = "all_assessments",
                                   tabPanel(#id = "all_assessments", 
@@ -261,8 +260,13 @@ ui <- function(request){
                                   
                       )
              ),
-             
-             tabPanel("3. Compare pests by questions",
+             tabPanel("3. Risk rank Plot",
+                      plotOutput(outputId = "riskrank_plot",
+                                 height = "900px"#, 
+                                 # brush = brushOpts(id = "plot_brush", resetOnNew = TRUE)
+                      ) 
+             ),
+             tabPanel("4. Compare pests by questions",
                       fluidPage(
                         fluidRow(
                           column(3,

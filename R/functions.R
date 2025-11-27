@@ -36,7 +36,7 @@ tbl_hdr_all <- htmltools::withTags(table(
     ),
     tr(
       lapply(rep(c('Entry', 'Establishment and spread', 'Invasion', 'Impact', 
-                   'Risk A', 'Preventability', 'Controllability', 'Manageability'), 1), th)
+                   'Risk', 'Preventability', 'Controllability', 'Manageability'), 1), th)
       
     )
   )
@@ -59,7 +59,7 @@ tbl_hdr_all_2 <- htmltools::withTags(table(
     ),
     tr(
       lapply(rep(c('Entry', 'Establishment and spread', 'Invasion', 'Impact', 
-                   'Risk A', 'Preventability', 'Controllability', 'Manageability'), 1), th)
+                   'Risk', 'Preventability', 'Controllability', 'Manageability'), 1), th)
       
     )
   )
