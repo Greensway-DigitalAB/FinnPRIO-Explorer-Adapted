@@ -261,10 +261,32 @@ ui <- function(request){
                       )
              ),
              tabPanel("3. Risk rank Plot",
-                      plotOutput(outputId = "riskrank_plot",
-                                 height = "900px"#, 
-                                 # brush = brushOpts(id = "plot_brush", resetOnNew = TRUE)
-                      ) 
+                      fluidPage(
+                        fluidRow(
+                          column(9,
+                                 plotOutput(outputId = "riskrank_plot",
+                                            height = "900px"#, 
+                                            # brush = brushOpts(id = "plot_brush", resetOnNew = TRUE)
+                                            )
+                                 ),
+                          column(3,
+                                wellPanel(
+                                  fluidRow(
+                                    column(7,
+                                           #Download with options:
+                                           downloadButton(outputId = "download_risk", 
+                                                          label = "Save Plot")
+                                    ),
+                                    column(5,offset = 0,
+                                           radioButtons(inputId = "extension_risk", 
+                                                        label = NULL,
+                                                        choices = c("png", "pdf"), inline = FALSE)
+                                           )
+                                    )
+                                  )
+                          )
+                        )
+                      )
              ),
              tabPanel("4. Compare pests by questions",
                       fluidPage(

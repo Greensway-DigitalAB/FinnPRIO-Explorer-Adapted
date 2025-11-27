@@ -623,47 +623,54 @@ function(input, output, session) {
   # }) 
   
   # Generate Risk rank plot ----
-  output$riskrank_plot <- renderPlot({
-    # req(selected_status())
-    # cleanfinnprioresults$risk_mean
+  plot_risk_output <- reactive({   
+    data <- cleanfinnprioresults |> 
+      mutate(pest_label = paste0(pest, " [",eppo_code,"]"))
+    # |> 
+    #   mutate(label = fct_reorder(pest_label, risk_mean, .desc = TRUE)) 
+    #arrange(desc(risk_mean))
     
-    p <- ggplot(cleanfinnprioresults,
+    
+    risk_order <- data |>
+      arrange(risk_mean) |>
+      pull(pest_label)
+    
+    
+    p <- ggplot(data,
                 aes(x = risk_mean, 
-                    y = paste0(pest, " [",eppo_code,"]"), 
-                    color = quarantine_status
+                    y = pest_label#, 
+                    # color = quarantine_status
                 )) + 
       
       geom_point(size = 3) +  
       
       xlim(min = 0, max = 1) + #ylim(min = 0, max = 1)  + 
+      scale_y_discrete(limits = risk_order) +
       labs(
-        caption = paste("    The dots indicate the simulated mean score, and the whiskers show the 25th and the 75th percentiles of the distribution of the scores.
-                         \n    Number of pests: ", nrow(cleanfinnprioresults)), #selected_status1()
-        color = "" # "Quarantine status:"
+        caption = paste("    The dots indicate the simulated mean risk score, and the whiskers show the 25th and the 75th percentiles of the distribution of the scores.
+                         \n    Number of pests: ", nrow(cleanfinnprioresults))#,
+        # color = "" # "Quarantine status:"
       ) +
-      
-      # gghighlight(use_direct_label = FALSE, 
-      #             keep_scales = TRUE) +
-      # 
       theme_bw() +
       #### Size of the plot scales:
       theme(axis.text = element_text(size=12), 
             #### Size of the plot labels:
-            axis.title = element_text(size=14,face="bold")) +  
-      #### Size of the plot title:
-      theme(plot.title = element_text(size=16,hjust=0.5, vjust=0.25, face="bold")) +
-      #### Size of the caption that shows number of pests:
-      theme(plot.caption = element_text(size=10, hjust=0, face="bold"), plot.caption.position = "plot") +                      
-      theme(axis.title.x=element_text(vjust=-1))+
-      theme(axis.title.y=element_text(vjust=1))+
-      guides(colour = guide_legend(nrow = 1)) +
-      theme(legend.text = element_text(size=10),
+            axis.title = element_text(size=14,face="bold"),
+            #### Size of the plot title:
+            plot.title = element_text(size=16,hjust=0.5, vjust=0.25, face="bold"),
+            #### Size of the caption that shows number of pests:
+            plot.caption = element_text(size=10, hjust=0, face="bold"), 
+            plot.caption.position = "plot",
+            axis.title.x=element_text(vjust=-1),
+            axis.title.y=element_text(vjust=1),
+            legend.text = element_text(size=10),
             legend.direction = "horizontal",
             legend.position = "bottom") +
+      guides(colour = guide_legend(nrow = 1)) #+
       
       #Add to scale_color_manual 'limits = force', if want to update the legend. 
       # Note that the order becomes alphabetical!
-      scale_color_manual(aesthetics = "color", values = cols_pal) #+, limits = force
+      # scale_color_manual(aesthetics = "color", values = cols_pal) #+, limits = force
       
       # Zoom the plot:
       # coord_cartesian(xlim = c(input$xlims[1], input$xlims[2]), ylim = c(input$ylims[1], input$ylims[2]), expand = TRUE)
@@ -672,17 +679,9 @@ function(input, output, session) {
     # Plot conditions:---
       p <- p + 
         labs(x = "Risk score") +
-        labs( y = "Pest name") 
+        labs( y = "Pest") 
 
-    # # Threshold line (Y): 
-    # p <- p +
-    #   {if(input$threshold)
-    #     geom_hline(yintercept = input$threshold,
-    #                linetype = "dotted",
-    #                colour = "red",
-    #                size = 1,
-    #                na.rm = FALSE)}
-
+    
     # Threshold line (X): 
     p <- p +
       # {if(input$thresholdX)
@@ -693,7 +692,6 @@ function(input, output, session) {
                    na.rm = FALSE)
     # }
 
-
     ## Display pests' names when select checkbox: ----
     p <- p +
       {if(input$pest_name)
@@ -703,7 +701,6 @@ function(input, output, session) {
                   hjust = -0.08)
     }
     
-    
     ## Display error bars from 25th and 75th percentile when select checkbox for X: ----
     p <- p +
       geom_errorbar(aes(xmax = risk_75perc,
@@ -712,6 +709,20 @@ function(input, output, session) {
     p
   })
   
+  output$riskrank_plot <- renderPlot({
+    plot_risk_output()
+  })
+  
+  ## Download the Risk rank plot:----
+  output$download_risk <- downloadHandler(
+    filename = function() {
+      paste("plot_risk", input$extension_risk, sep = ".")
+    },
+    content = function(file){
+      ggsave(file, plot_risk_output(), 
+             device = input$extension_risk,  width = 15, height = 10)
+    }
+  )
   
   ## Generate table with FinnPRIO assessments allowing comparison of two pests in "3. Compare pests by questions"-tab:----
   output$pest_1_2 <- DT::renderDataTable({
