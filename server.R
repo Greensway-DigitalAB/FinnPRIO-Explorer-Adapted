@@ -23,17 +23,17 @@ function(input, output, session) {
         need(thr_sec, "Select a threatened sector(s)")
       )
       
-    }else  {
+    } else  {
       
       cleanfinnprioresults |> 
         filter(
           quarantine_status  %in% input$quarantine_status,
           taxonomic_group %in% input$taxonomic_group,
           presence_in_europe %in% input$presence_in_europe,
-          entry_median > input$entry_score[1] & entry_median < input$entry_score[2],
-          establishment_and_spread_median > input$establishment_score[1] & establishment_and_spread_median < input$establishment_score[2],
-          invasion_median > input$invasion_score[1] & invasion_median < input$invasion_score[2],
-          impact_median > input$impact_score[1] & impact_median < input$impact_score[2]
+          entry_median >= input$entry_score[1] & entry_median <= input$entry_score[2],
+          establishment_and_spread_median >= input$establishment_score[1] & establishment_and_spread_median <= input$establishment_score[2],
+          invasion_median >= input$invasion_score[1] & invasion_median <= input$invasion_score[2],
+          impact_median >= input$impact_score[1] & impact_median <= input$impact_score[2]
         )
     }
   })
@@ -197,7 +197,7 @@ function(input, output, session) {
   # Generate a plot in "1. Select pests to plot"-tab:----
   plot_output <- reactive({   
     req(selected_status())
-    
+
     p <- ggplot(selected_status(), #selected_status1(),
                 # aes_string(x = input$xaxis,
                 aes(x = !!sym(input$xaxis),

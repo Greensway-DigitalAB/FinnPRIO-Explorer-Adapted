@@ -391,8 +391,8 @@ ui <- function(request){
                                           tags$p(),
                                           tags$p(style = "font-size:13px;",
                                                  "The results presented in this app are based on all FinnPRIO assessments done for Sweden and the calculations 
-                                                 were done using the FinnPRIO-Assessor app (TO DO)", 
-                                                 tags$a("(ZENODO)",href="https://doi.org/10.5281/zenodo.2784027", target="_blank"),"."),
+                                                 were done using the FinnPRIO-Assessor app", 
+                                                 tags$a("(ZENODO)",href="https://doi.org/10.5281/zenodo.17816319", target="_blank")),
                                           tags$p(),
                                           tags$p(style = "font-size:13px;",
                                                  "The probability distributions of the scores were simulated with 50 000 iterations. The likelihood of entry 
@@ -442,23 +442,11 @@ ui <- function(request){
                                                    tags$br(),
                                                    tags$p(style = "font-size:13px;","Marinova-Todorova M, Tuomola J & Hannunen S. (2022) FinnPRIO-Explorer - A tool for examining assessments made with the FinnPRIO model.
                                                           Finnish Food Authority. Available at ", tags$a("https://finnprio-explorer.2.rahtiapp.fi/", target="_blank"),
-                                                          tags$a("https://doi.org/10.5281/zenodo.7016771",href="https://doi.org/10.5281/zenodo.7016771", target="_blank"))
-                                                   # tags$br(),
-                                                   # tags$p(style = "font-size:13px;","Tuomola J, Yemshanov D, Huitu H & Hannunen S (2018) Mapping risks of pest invasions based on the spatio-temporal 
-                                                   #        distribution of hosts. Management of Biological Invasions 9, 115- 126. ",
-                                                   #        tags$a("doi.org/10.3391/mbi.2018.9.2.05",href="https://doi.org/10.3391/mbi.2018.9.2.05", target="_blank")),
-                                                   # tags$br(),
-                                                   # tags$p(style = "font-size:13px;","While L, Bradstreet L & Barone L (2012) A fast way of calculating exact hypervolumes. IEEE Transactions 
-                                                   #        on Evolutionary Computation 16, 86- 95. doi:",
-                                                   #        tags$a("10.1109/TEVC.2010.2077298",href="https://ieeexplore.ieee.org/document/5766730", target="_blank")),
-                                                   # tags$br(),
-                                                   # tags$p(style = "font-size:13px;","Yemshanov D, Koch FH, Bo L, Fournier R, Cook G & Turgeon JJ (2017) A new hypervolume approach for assessing 
-                                                   #        environmental risks. Journal of Environmental Management 193, 188- 200. ",
-                                                   #        tags$a("doi.org/10.1016/j.jenvman.2017.02.021",href="https://doi.org/10.1016/j.jenvman.2017.02.021", target="_blank")),
-                                                   # tags$br(),
-                                                   # tags$p(style = "font-size:13px;","Yemshanov D, Koch FH, Lyons B, Ducey M & Koehler K (2012) A dominance-based approach to map risks of 
-                                                   #        ecological invasions in the presence of severe uncertainty. Diversity and Distributions 18, 33- 46.",
-                                                   #        tags$a("doi.org/10.1111/j.1472-4642.2011.00848.x",href="https://doi.org/10.1111/j.1472-4642.2011.00848.x", target="_blank"))
+                                                          tags$a("https://doi.org/10.5281/zenodo.7016771",href="https://doi.org/10.5281/zenodo.7016771", target="_blank")),
+                                                   tags$br(),
+                                                   tags$p(style = "font-size:13px;","Ruete, A., Björklund, N., & Boberg, J. (2025). FinnPRIO-Explorer Adapted: Explore and visualize FinnPRIO assessment results (Version 1.0) 
+                                                          [Web application]. Swedish University of Agricultural Sciences. Available from ",
+                                                          tags$a("doi.org/10.5281/zenodo.17813062",href="https://doi.org/10.5281/zenodo.17813062", target="_blank"))
                                                  ))
                                                  
                                         ),
@@ -467,9 +455,8 @@ ui <- function(request){
                                                    tags$br(),
                                                    tags$p(style = "font-size:13px;",
                                                           "The source code is available at ",
-## TODO updata this
-                                                          tags$a("Zenodo",href="https://doi.org/10.5281/zenodo.7016771", target="_blank"),
-                                                          " under the ",tags$a("GNU General Public License version 3", href="https://opensource.org/licenses/GPL-3.0", target="_blank"), ".")
+                                                          tags$a("Zenodo",href="https://doi.org/10.5281/zenodo.17813062", target="_blank"),
+                                                          " under the ",tags$a("GNU General Public License version 4", href="https://creativecommons.org/licenses/by/4.0/legalcode", target="_blank"), ".")
                                                    
                                                  ))
                                         ),
@@ -478,9 +465,8 @@ ui <- function(request){
                                                    tags$br(),
                                                    tags$p(style = "font-size:13px;",
                                                           "Ruete, A., Björklund, N., & Boberg, J. (2025). FinnPRIO-Explorer Adapted: Explore and visualize FinnPRIO assessment results (Version 1.0) [Web application]. Swedish University of Agricultural Sciences. Available from ",
-### TODO UPDATE this part                                                          
-                                                          tags$a("https://finnprio-explorer.rahtiapp.fi/", href="https://finnprio-explorer.rahtiapp.fi/", target="_blank"),", ",
-                                                          tags$a("doi.org/10.5281/zenodo.7016771", href="https://doi.org/10.5281/zenodo.7016771", target="_blank"))
+                                                          tags$a("https://finnprio-explorer-adapted.serve.scilifelab.se/app/finnprio-explorer-adapted", href="https://finnprio-explorer-adapted.serve.scilifelab.se/app/finnprio-explorer-adapted", target="_blank"),", ",
+                                                          tags$a("doi.org/10.5281/zenodo.17813062", href="https://doi.org/10.5281/zenodo.17813062", target="_blank"))
                                                    
                                                  ))
                                         )

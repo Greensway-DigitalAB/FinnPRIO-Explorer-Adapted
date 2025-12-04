@@ -118,8 +118,14 @@ missing_rows <- full_grid  |>
   )
 
 # 3. Append missing rows to answers
-answers_complete <- bind_rows(answers_main, missing_rows) |> 
-  arrange(idAssessment, idQuestion)
+if (nrow(missing_rows) > 0) {
+  answers_complete <- bind_rows(answers_main, missing_rows) |> 
+    arrange(idAssessment, idQuestion)  
+} else {
+  answers_complete <- answers_main |> 
+    arrange(idAssessment, idQuestion)  
+}
+
 
 # # Optional: generate new idAnswer for missing rows
 # answers_complete <- answers_complete |> 
@@ -134,11 +140,12 @@ answers_long <- answers_complete |>
   select(-idAnswer ) |> 
   left_join(questions_main, by = "idQuestion") |> 
   # 2. Join with assessments to get pest IDs
-  left_join(assessments |> 
+  right_join(assessments |>
               group_by(idPest) |>
               arrange(desc(valid), desc(endDate)) |>   # valid first, then latest date
-              slice(1) |>                              # pick the top row per group
-              ungroup(), 
+              slice_max(order_by = endDate) |>         # pick the top row per group
+              # slice(1) |>                              # pick the top row per group
+              ungroup(),
             by = "idAssessment") |> 
   # 3. Join with pests to get pest names
   left_join(pests, by = "idPest") |> 
@@ -150,7 +157,8 @@ answers_long <- answers_complete |>
 # 5. Build the final table: group by question and spread pests as columns
 final_table <- answers_long  |> 
   select(group, idQuestion, `Answer for`, scientificName , Answer)  |> 
-  pivot_wider(names_from = scientificName , values_from = Answer) |> 
+  pivot_wider(names_from = scientificName, 
+              values_from = Answer) |> 
   arrange(group, idQuestion) |> 
   rename("Codes" = group) |> 
   as.data.frame()
