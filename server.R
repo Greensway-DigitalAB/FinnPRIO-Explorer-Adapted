@@ -469,7 +469,7 @@ function(input, output, session) {
                   backgroundRepeat = "no-repeat",
                   backgroundPosition = "center") |> 
       formatStyle("Risk",
-                  background = styleColorBar(cleanfinnprioresults$risk_median, "#DE4C9A"),
+                  background = styleColorBar(cleanfinnprioresults$risk_median, "#A77DC2"),
                   backgroundSize = "98% 88%",
                   backgroundRepeat = "no-repeat",
                   backgroundPosition = "center") |> 
@@ -593,7 +593,7 @@ function(input, output, session) {
                   backgroundRepeat = "no-repeat",
                   backgroundPosition = "center") |> 
       formatStyle("Risk",
-                  background = styleColorBar(cleanfinnprioresults$risk_mean, "#DE4C9A"),
+                  background = styleColorBar(cleanfinnprioresults$risk_mean, "#A77DC2"),
                   backgroundSize = "98% 88%",
                   backgroundRepeat = "no-repeat",
                   backgroundPosition = "center") |> 
@@ -610,14 +610,8 @@ function(input, output, session) {
                      year = 'numeric' 
                    )
                  ))
-    
   })
   
-  
-  # observe({
-  #   updateSelectInput(session,"pest1_sel",choices=colnames(pestquestions))
-  #   #updateSelectInput(session,"sizes",choices=colnames(df_p_samp()))
-  # }) 
   
   # Generate Risk rank plot ----
   plot_risk_output <- reactive({   
@@ -634,7 +628,7 @@ function(input, output, session) {
     
     
     p <- ggplot(data,
-                aes(x = risk_mean, 
+                aes(x = risk_median, 
                     y = pest_label#, 
                     # color = quarantine_status
                 )) + 
@@ -644,7 +638,7 @@ function(input, output, session) {
       xlim(min = 0, max = 1) + #ylim(min = 0, max = 1)  + 
       scale_y_discrete(limits = risk_order) +
       labs(
-        caption = paste("    The dots indicate the simulated mean risk score, and the whiskers show the 5th and the 95th percentiles of the distribution of the scores.
+        caption = paste("    The dots indicate the simulated median risk score, and the whiskers show the 5th and the 95th percentiles of the distribution of the scores.
                          \n    Number of pests: ", nrow(cleanfinnprioresults))#,
         # color = "" # "Quarantine status:"
       ) +
@@ -679,24 +673,24 @@ function(input, output, session) {
         labs( y = "Pest") 
 
     
-    # Threshold line (X): 
-    p <- p +
-      # {if(input$thresholdX)
-        geom_vline(xintercept = 0.5, #input$thresholdX,
-                   linetype = "dotted",
-                   colour = "red",
-                   linewidth = 1,
-                   na.rm = FALSE)
-    # }
+    # # Threshold line (X): 
+    # p <- p +
+    #   # {if(input$thresholdX)
+    #     geom_vline(xintercept = 0.5, #input$thresholdX,
+    #                linetype = "dotted",
+    #                colour = "red",
+    #                linewidth = 1,
+    #                na.rm = FALSE)
+    # # }
 
-    ## Display pests' names when select checkbox: ----
-    p <- p +
-      {if(input$pest_name)
-        geom_text(aes(label = pest),
-                  size = 4,
-                  vjust = -0.05,
-                  hjust = -0.08)
-    }
+    # ## Display pests' names when select checkbox: ----
+    # p <- p +
+    #   {if(input$pest_name)
+    #     geom_text(aes(label = pest),
+    #               size = 4,
+    #               vjust = -0.05,
+    #               hjust = -0.08)
+    # }
     
     ## Display error bars from 5th and 95th percentile when select checkbox for X: ----
     p <- p +

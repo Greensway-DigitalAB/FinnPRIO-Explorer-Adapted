@@ -382,18 +382,21 @@ ui <- function(request){
                                           
                                           tags$br(),
                                           tags$b("FinnPRIO-Explorer Adapted vs. FinnPRIO-Explorer"),
-                                          tags$p(style = "font-size:13px;","FinnPRIO-Explorer Adapted introduces additional functionality: risk scores are shown 
-                                          directly in the interface, and data presentation is more flexible. Users can select which summary statistic to display 
-                                          (median or mean)."),
+                                          tags$p(style = "font-size:13px;","FinnPRIO-Explorer Adapted introduces additional functionality: risk scores are 
+                                                 shown directly in the interface and a ranking based on risk is included. Users can also select to display all 
+                                                 scores not only as median values but also as mean values. The uncertainty is displayed by showing the 5th percentile 
+                                                 and the 95th percentile."),
                                           tags$br(),
                                           tags$b("FinnPRIO assessments for Sweden"),
                                           tags$p(),
                                           tags$p(style = "font-size:13px;",
-                                                 "The results presented in this app are based on all FinnPRIO assessments done for Sweden and the calculations were done using the FinnPRIO-Assessor app (TO DO)", 
+                                                 "The results presented in this app are based on all FinnPRIO assessments done for Sweden and the calculations 
+                                                 were done using the FinnPRIO-Assessor app (TO DO)", 
                                                  tags$a("(ZENODO)",href="https://doi.org/10.5281/zenodo.2784027", target="_blank"),"."),
                                           tags$p(),
                                           tags$p(style = "font-size:13px;",
-                                                 "The probability distributions of the scores were simulated with 50 000 iterations. The likelihood of entry is assessed taking into account the current management measures.")
+                                                 "The probability distributions of the scores were simulated with 50 000 iterations. The likelihood of entry 
+                                                 is assessed taking into account the current management measures.")
                                           # tags$br(),
                                           # tags$b("Ranking FinnPRIO assessments using the hypervolume approach"),
                                           # tags$p(),
