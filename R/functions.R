@@ -14,7 +14,7 @@ tbl_hdr <- htmltools::withTags(table(
       th(class = 'dt-center', colspan = 3, 'Impact scores')
     ),
     tr(
-      lapply(rep(c('min', 'median', 'max'), 4), th)
+      lapply(rep(c('5th percentile', 'median', '95th percentile'), 4), th)
     )
   )
 ))

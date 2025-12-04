@@ -86,19 +86,19 @@ function(input, output, session) {
            pest, 
            taxonomic_group, 
            presence_in_europe,
-           entry_25perc,
+           entry_5perc,
            # paste0("entry_", input$center), #median,
            entry_median,
-           entry_75perc,
-           establishment_and_spread_25perc,
+           entry_95perc,
+           establishment_and_spread_5perc,
            establishment_and_spread_median,
-           establishment_and_spread_75perc,
-           invasion_25perc,
+           establishment_and_spread_95perc,
+           invasion_5perc,
            invasion_median, 
-           invasion_75perc,
-           impact_25perc,
+           invasion_95perc,
+           impact_5perc,
            impact_median,
-           impact_75perc
+           impact_95perc
     )
   })
   
@@ -122,18 +122,18 @@ function(input, output, session) {
                                "Pest" = "pest", 
                                "Taxonomic group" = "taxonomic_group", 
                                "Presence in Europe" = "presence_in_europe",
-                               "Entry, min" = "entry_25perc",
+                               "Entry, 5th percentile" = "entry_5perc",
                                "Entry, median" = "entry_median",
-                               "Entry, max" = "entry_75perc",
-                               "Establishment and spread, min" = "establishment_and_spread_25perc",
+                               "Entry, 95th percentile" = "entry_95perc",
+                               "Establishment and spread, 5th percentile" = "establishment_and_spread_5perc",
                                "Establishment and spread, median" = "establishment_and_spread_median",
-                               "Establishment and spread, max" = "establishment_and_spread_75perc",
-                               "Invasion, min" = "invasion_25perc",
+                               "Establishment and spread, 95th percentile" = "establishment_and_spread_95perc",
+                               "Invasion, 5th percentile" = "invasion_5perc",
                                "Invasion, median" = "invasion_median", 
-                               "Invasion, max" = "invasion_75perc",
-                               "Impact, min" = "impact_25perc",
+                               "Invasion, 95th percentile" = "invasion_95perc",
+                               "Impact, 5th percentile" = "impact_5perc",
                                "Impact, median" = "impact_median",
-                               "Impact, max" = "impact_75perc"
+                               "Impact, 95th percentile" = "impact_95perc"
                   ),
                   class = 'cell-border stripe',
                   container = tbl_hdr, # -> Transforms the table header into 2 rows. To make changes go to 'tbl_hdr' in functions.R
@@ -167,10 +167,10 @@ function(input, output, session) {
                     paging = FALSE)) |> 
       
       formatStyle("Pest",  color = "black", fontWeight = "bold", fontStyle = "normal") |>
-      formatRound(c("Entry, min", "Entry, median", "Entry, max", "Establishment and spread, min",
-                    "Establishment and spread, median", "Establishment and spread, max",
-                    "Invasion, min", "Invasion, median", "Invasion, max",
-                    "Impact, min", "Impact, median", "Impact, max"), 2) |>
+      formatRound(c("Entry, 5th percentile", "Entry, median", "Entry, 95th percentile", 
+                    "Establishment and spread, 5th percentile", "Establishment and spread, median", "Establishment and spread, 95th percentile",
+                    "Invasion, 5th percentile", "Invasion, median", "Invasion, 95th percentile",
+                    "Impact, 5th percentile", "Impact, median", "Impact, 95th percentile"), 2) |>
       formatStyle("Entry, median",
                   background = styleColorBar(cleanfinnprioresults$entry_median, "#DAE375"),
                   backgroundSize = "98% 88%",
@@ -209,7 +209,7 @@ function(input, output, session) {
       
       xlim(min = 0, max = 1) + ylim(min = 0, max = 1)  + 
       labs(
-        caption = paste("    The dots indicate the simulated median score, and the whiskers show the 25th and the 75th percentiles of the distribution of the scores.
+        caption = paste("    The dots indicate the simulated median score, and the whiskers show the 5th and the 95th percentiles of the distribution of the scores.
                          \n    Number of pests: ", nrow(selected_status())), #selected_status1()
         color = "" # "Quarantine status:"
       ) +
@@ -300,54 +300,51 @@ function(input, output, session) {
                   hjust = -0.08)} 
     
     
-    ## Display error bars from 25th and 75th percentile when select checkbox for X: ----
+    ## Display error bars from 5th and 95th percentile when select checkbox for X: ----
     p <- p +  
       {if(input$whiskers_for_x && input$xaxis == "invasion_median") 
-        geom_errorbar(aes(xmax = invasion_75perc, 
-                          xmin = invasion_25perc),  
+        geom_errorbar(aes(xmax = invasion_95perc, 
+                          xmin = invasion_5perc),  
                       width = 0.01)
         
         else if(input$whiskers_for_x && input$xaxis == "establishment_and_spread_median") 
-          geom_errorbar(aes(xmax = establishment_and_spread_75perc, 
-                            xmin = establishment_and_spread_25perc),  
+          geom_errorbar(aes(xmax = establishment_and_spread_95perc, 
+                            xmin = establishment_and_spread_5perc),  
                         width = 0.01)
         
         else if(input$whiskers_for_x && input$xaxis == "entry_median") 
-          geom_errorbar(aes(xmax = entry_75perc, 
-                            xmin = entry_25perc),  
+          geom_errorbar(aes(xmax = entry_95perc, 
+                            xmin = entry_5perc),  
                         width = 0.01)
         
         else if(input$whiskers_for_x && input$xaxis == "impact_median") 
-          geom_errorbar(aes(xmax = impact_75perc, 
-                            xmin = impact_25perc),  
+          geom_errorbar(aes(xmax = impact_5perc, 
+                            xmin = impact_95perc),  
                         width = 0.01)} 
     
     
-    ## Display error bars from 25th and 75th percentile when select checkbox for Y: ----
+    ## Display error bars from 5th and 95th percentile when select checkbox for Y: ----
     p <- p + 
       {if(input$whiskers_for_y && input$yaxis == "impact_median") 
-        geom_errorbar(aes(ymax = impact_75perc, 
-                          ymin = impact_25perc),  
+        geom_errorbar(aes(ymax = impact_95perc, 
+                          ymin = impact_5perc),  
                       width = 0.01)
         
         else if(input$whiskers_for_y && input$yaxis == "invasion_median") 
-          geom_errorbar(aes(ymax = invasion_75perc, 
-                            ymin = invasion_25perc),  
+          geom_errorbar(aes(ymax = invasion_95perc, 
+                            ymin = invasion_5perc),  
                         width = 0.01)
         
         else if(input$whiskers_for_y && input$yaxis == "establishment_and_spread_median") 
-          geom_errorbar(aes(ymax = establishment_and_spread_75perc, 
-                            ymin = establishment_and_spread_25perc),  
+          geom_errorbar(aes(ymax = establishment_and_spread_95perc, 
+                            ymin = establishment_and_spread_5perc),  
                         width = 0.01)
         
         else if(input$whiskers_for_y && input$yaxis == "entry_median") 
-          geom_errorbar(aes(ymax = entry_75perc, 
-                            ymin = entry_25perc),  
+          geom_errorbar(aes(ymax = entry_95perc, 
+                            ymin = entry_5perc),  
                         width = 0.01)}  
-    
     p
-    
-    
   })
   
   
@@ -647,7 +644,7 @@ function(input, output, session) {
       xlim(min = 0, max = 1) + #ylim(min = 0, max = 1)  + 
       scale_y_discrete(limits = risk_order) +
       labs(
-        caption = paste("    The dots indicate the simulated mean risk score, and the whiskers show the 25th and the 75th percentiles of the distribution of the scores.
+        caption = paste("    The dots indicate the simulated mean risk score, and the whiskers show the 5th and the 95th percentiles of the distribution of the scores.
                          \n    Number of pests: ", nrow(cleanfinnprioresults))#,
         # color = "" # "Quarantine status:"
       ) +
@@ -701,10 +698,10 @@ function(input, output, session) {
                   hjust = -0.08)
     }
     
-    ## Display error bars from 25th and 75th percentile when select checkbox for X: ----
+    ## Display error bars from 5th and 95th percentile when select checkbox for X: ----
     p <- p +
-      geom_errorbar(aes(xmax = risk_75perc,
-                        xmin = risk_25perc),
+      geom_errorbar(aes(xmax = risk_95perc,
+                        xmin = risk_5perc),
                     width = 0.01)
     p
   })
