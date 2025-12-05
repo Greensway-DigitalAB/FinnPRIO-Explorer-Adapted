@@ -717,14 +717,15 @@ function(input, output, session) {
   
   ## Generate table with FinnPRIO assessments allowing comparison of two pests in "3. Compare pests by questions"-tab:----
   output$pest_1_2 <- DT::renderDataTable({
-    
+print(pestquestions)    
     req(input$Codes)
     # Filter the questions' groups based on the info in one column using dropdown menu -> Entry, Establishment and spread,Ipact, Management:
     pestquestion_codes <- reactive({  
       pestquestions |> 
         filter(Codes %in% input$Codes)
     }) 
-    
+print(pestquestion_codes())
+
     
     req(input$pest1_sel,input$pest2_sel) 
     dat <- datatable(
@@ -761,7 +762,7 @@ function(input, output, session) {
       # (https://rstudio.github.io/DT/functions.html), (https://rstudio.github.io/DT/010-style.html):
       formatStyle(columns = 1:2, 
                   
-                  fontWeight = styleEqual(c("most likely", ""),
+                  fontWeight = styleEqual(c("likely", ""),
                                           c('bold', '')),
                   
                   fontStyle = styleEqual(c("min", "max"),
