@@ -676,7 +676,7 @@ function(input, output, session) {
     content = function(file){
       ggsave(file, plot_risk_output(), 
              device = input$extension_risk, 
-             width = 15, height = 20)
+             width = 15, height = 40)
     }
   )
   
